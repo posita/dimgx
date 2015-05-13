@@ -1,0 +1,67 @@
+#-*-encoding: utf-8-*-
+
+#=========================================================================
+# Copyright (c) 2015 Matt Bogosian <mtb19@columbia.edu>.
+#
+# Please see the LICENSE (or LICENSE.txt) file which accompanied this
+# software for rights and restrictions governing its use. All rights not
+# expressly waived or licensed are reserved. If such a file did not
+# accompany this software, then please contact the author before viewing
+# or using this software in any capacity.
+#=========================================================================
+
+# Various build/test entities
+*.egg
+*.egg-info
+*.eggs
+*_flymake.py
+.coverage
+.vagrant
+.venv-*
+.virtualenv
+_trial_temp
+build
+dist
+docs/_build
+
+# Compiled objects
+*.class
+*.com
+*.dll
+*.exe
+*.o
+*.py[co]
+*.so
+dropin.cache
+
+# Packages
+*.7z
+*.bz2
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.xz
+*.zip
+
+# Logs, databases, etc.
+*.log
+*.log.[0-9]*
+*.pid
+*.sqlite
+nohup.out
+
+# OS/app generated entities
+._*
+.~*
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Exceptions
