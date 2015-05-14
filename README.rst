@@ -6,6 +6,11 @@
    It looks like crap in a text editor, but it has no effect on rendering, and it allows much more useful diffs.
    Thank you!
 
+|build badge|_
+
+.. |build badge| image:: https://travis-ci.org/posita/py-dimgx.svg?branch=master
+.. _`build badge`: https://travis-ci.org/posita/py-dimgx
+
 Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
 
 .. |(c)| unicode:: u+a9
