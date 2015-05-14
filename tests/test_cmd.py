@@ -23,7 +23,6 @@ from __future__ import (
 
 from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
-from future.utils import iteritems
 # pylint: disable=missing-super-argument
 
 #---- Imports ------------------------------------------------------------
@@ -35,157 +34,138 @@ from _dimgx.cmd import (
     printlayerinfo,
     selectlayers,
 )
+from dimgx import inspectlayers
+from tests.fauxdockerclient import FauxDockerClient
 
 #---- Classes ------------------------------------------------------------
 
 #=========================================================================
 class CommandTestCase(TestCase):
 
-    #---- Constructor ----------------------------------------------------
+    #---- Public hook methods --------------------------------------------
 
     #=====================================================================
     def setUp(self):
         super().setUp()
         self.longMessage = True
+        self.maxDiff = None
         self._parser = buildparser()
-
-        # Build some fake layers for testing
-        self._fake_layers = {}
-        layers_list = []
-        last_layer_id = ''
-
-        for i in range(0, 0x10):
-            layer_chr = '{:1x}'.format(i)
-            layer_id = layer_chr * 64
-            layer = {
-                'Created': '2015-05-{:02d}T{:02d}:00:00Z'.format(i + 10, i),
-                'Id': layer_id,
-                'Parent': last_layer_id,
-                'Size': int(layer_chr * 7, 16),
-            }
-            self._fake_layers[layer_id[:12]] = i
-            self._fake_layers[layer_id] = i
-            layers_list.append(layer)
-            last_layer_id = layer_id
-
-        layers_list = tuple(layers_list)
-
-        for k, v in iteritems(self._fake_layers):
-            self.assertEqual(k, layers_list[v]['Id'][:len(k)], msg='( k, v ): {!r}'.format(( k, v )))
-
-        self._fake_layers['layers_list'] = layers_list
-
-    #---- Hook methods ---------------------------------------------------
+        self._dc = FauxDockerClient()
 
     #=====================================================================
     def test_layerspecs(self):
+        path_ids = self._dc.ids_by_path[0]
+        image_spec = path_ids[-1]
+
         specs = (
             {
-                'args': ( '-q', 'IMAGE_SPEC', ),
-                'layer_ids': ( '000000000000', '111111111111', '222222222222', '333333333333', '444444444444', '555555555555', '666666666666', '777777777777', '888888888888', '999999999999', 'aaaaaaaaaaaa', 'bbbbbbbbbbbb', 'cccccccccccc', 'dddddddddddd', 'eeeeeeeeeeee', 'ffffffffffff' ),
+                'args': ( '-q', image_spec ),
+                'layer_ids': path_ids,
             }, {
-                'args': ( '-r', '-q', 'IMAGE_SPEC', ),
-                'layer_ids': ( 'ffffffffffff', 'eeeeeeeeeeee', 'dddddddddddd', 'cccccccccccc', 'bbbbbbbbbbbb', 'aaaaaaaaaaaa', '999999999999', '888888888888', '777777777777', '666666666666', '555555555555', '444444444444', '333333333333', '222222222222', '111111111111', '000000000000' ),
+                'args': ( '-r', '-q', image_spec ),
+                'layer_ids': path_ids[::-1],
             }, {
-                'args': ( '-l15', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'ffffffffffff', ),
+                'args': (  '-l', '15', '-q', image_spec ),
+                'layer_ids': [ path_ids[0xf] ],
             }, {
-                'args': ( '-l15:15', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'ffffffffffff', ),
+                'args': (  '-l', '15:15', '-q', image_spec ),
+                'layer_ids': [ path_ids[0xf] ],
             }, {
-                'args': ( '-l15:16', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'ffffffffffff', ),
+                'args': (  '-l', '15:16', '-q', image_spec ),
+                'layer_ids': [ path_ids[0xf] ],
             }, {
-                'args': ( '-l-1', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'ffffffffffff', ),
+                'args': ( '-l-1', '-q', image_spec ),
+                'layer_ids': [ path_ids[0xf] ],
             }, {
-                'args': ( '-l-1:-1', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'ffffffffffff', ),
+                'args': ( '-l-1:-1', '-q', image_spec ),
+                'layer_ids': [ path_ids[0xf] ],
             }, {
-                'args': ( '-l16:-1', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'ffffffffffff', ),
+                'args': (  '-l', '16:-1', '-q', image_spec ),
+                'layer_ids': [ path_ids[0xf] ],
             }, {
-                'args': ( '-l-1:16', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'ffffffffffff', ),
+                'args': ( '-l-1:16', '-q', image_spec ),
+                'layer_ids': [ path_ids[0xf] ],
             }, {
-                'args': ( '-l16:ffffffffffff', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'ffffffffffff', ),
+                'args': (  '-l', '16:{}'.format(path_ids[0xf]), '-q', image_spec ),
+                'layer_ids': [ path_ids[0xf] ],
             }, {
-                'args': ( '-lffffffffffff:16', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'ffffffffffff', ),
+                'args': (  '-l', '{}:16'.format(path_ids[0xf]), '-q', image_spec ),
+                'layer_ids': [ path_ids[0xf] ],
             }, {
-                'args': ( '-l-1:ffffffffffff', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'ffffffffffff', ),
+                'args': ( '-l-1:{}'.format(path_ids[0xf]), '-q', image_spec ),
+                'layer_ids': [ path_ids[0xf] ],
             }, {
-                'args': ( '-lffffffffffff:-1', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'ffffffffffff', ),
+                'args': (  '-l', '{}:-1'.format(path_ids[0xf]), '-q', image_spec ),
+                'layer_ids': [ path_ids[0xf] ],
             }, {
-                'args': ( '-l14:16', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'eeeeeeeeeeee', 'ffffffffffff' ),
+                'args': (  '-l', '14:16', '-q', image_spec ),
+                'layer_ids': [ path_ids[0xe], path_ids[0xf] ],
             }, {
-                'args': ( '-lffffffffffff:-2', '-r', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'eeeeeeeeeeee', 'ffffffffffff' ),
+                'args': (  '-l', '{}:-2'.format(path_ids[0xf]), '-r', '-q', image_spec ),
+                'layer_ids': [ path_ids[0xe], path_ids[0xf] ],
             }, {
-                'args': ( '-l1:-17', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( '111111111111', '000000000000' ),
+                'args': (  '-l', '1:-17', '-q', image_spec ),
+                'layer_ids': [ path_ids[0x1], path_ids[0x0] ],
             }, {
-                'args': ( '-l000000000000:-15', '-r', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( '111111111111', '000000000000' ),
+                'args': (  '-l', '{}:-15'.format(path_ids[0x0]), '-r', '-q', image_spec ),
+                'layer_ids': [ path_ids[0x1], path_ids[0x0] ],
             }, {
-                'args': ( '-l', '0', '-l', '-1', '-l', '1', '-l', '-2', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( '000000000000', 'ffffffffffff', '111111111111', 'eeeeeeeeeeee' ),
+                'args': ( '-l', '0', '-l', '-1', '-l', '1', '-l', '-2', '-q', image_spec ),
+                'layer_ids': [ path_ids[0x0], path_ids[0xf], path_ids[0x1], path_ids[0xe] ],
             }, {
-                'args': ( '-l', '0', '-l', '-1', '-l', '1', '-l', '-2', '-r', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'eeeeeeeeeeee', '111111111111', 'ffffffffffff', '000000000000' ),
+                'args': ( '-l', '0', '-l', '-1', '-l', '1', '-l', '-2', '-r', '-q', image_spec ),
+                'layer_ids': [ path_ids[0xe], path_ids[0x1], path_ids[0xf], path_ids[0x0] ],
             }, {
-                'args': ( '-l-10:10', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( '666666666666', '777777777777', '888888888888', '999999999999', 'aaaaaaaaaaaa' ),
+                'args': ( '-l-10:10', '-q', image_spec ),
+                'layer_ids': path_ids[0x6:0xb],
             }, {
-                'args': ( '-l6:-6', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( '666666666666', '777777777777', '888888888888', '999999999999', 'aaaaaaaaaaaa' ),
+                'args': ( '-l6:-6', '-q', image_spec ),
+                'layer_ids': path_ids[0x6:0xb],
             }, {
-                'args': ( '-l6:-6', '-r', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'aaaaaaaaaaaa', '999999999999', '888888888888', '777777777777', '666666666666' ),
+                'args': ( '-l6:-6', '-r', '-q', image_spec ),
+                'layer_ids': path_ids[0xa:0x5:-1],
             }, {
-                'args': ( '-l-6:6', '-l6:-6', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( '666666666666', '777777777777', '888888888888', '999999999999', 'aaaaaaaaaaaa' ),
+                'args': ( '-l-6:6',  '-l', '6:-6', '-q', image_spec ),
+                'layer_ids': path_ids[0x6:0xb],
             }, {
-                'args': ( '-l-6:6', '-l6:-6', '-r', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( '666666666666', '777777777777', '888888888888', '999999999999', 'aaaaaaaaaaaa' ),
+                'args': ( '-l-6:6',  '-l', '6:-6', '-r', '-q', image_spec ),
+                'layer_ids': path_ids[0x6:0xb],
             }, {
-                'args': ( '-l', '111111111111', '-l', '222222222222', '-l', '111111111111', '-l', 'aaaaaaaaaaaa', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( '222222222222', '111111111111', 'aaaaaaaaaaaa' ),
+                'args': ( '-l', path_ids[0x1], '-l', path_ids[0x2], '-l', path_ids[0x1], '-l', path_ids[0xa], '-q', image_spec ),
+                'layer_ids': [ path_ids[0x2], path_ids[0x1], path_ids[0xa] ],
             }, {
-                'args': ( '-l', '111111111111', '-l', '222222222222', '-l', '111111111111', '-l', 'aaaaaaaaaaaa', '-r', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( 'aaaaaaaaaaaa', '222222222222', '111111111111' ),
+                'args': ( '-l', path_ids[0x1], '-l', path_ids[0x2], '-l', path_ids[0x1], '-l', path_ids[0xa], '-r', '-q', image_spec ),
+                'layer_ids': [ path_ids[0xa], path_ids[0x2], path_ids[0x1] ],
             }, {
-                'args': ( '-l', '222222222222', '-l', '333333333333:000000000000', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( '333333333333', '222222222222', '111111111111', '000000000000' ),
+                'args': ( '-l', path_ids[0x2], '-l', '{}:{}'.format(path_ids[0x3], path_ids[0x0]), '-q', image_spec ),
+                'layer_ids': [ path_ids[0x3], path_ids[0x2], path_ids[0x1], path_ids[0x0] ],
             }, {
-                'args': ( '-l', '222222222222', '-l', '333333333333:000000000000', '-r', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': ( '000000000000', '111111111111', '333333333333', '222222222222' ),
+                'args': ( '-l', path_ids[0x2], '-l', '{}:{}'.format(path_ids[0x3], path_ids[0x0]), '-r', '-q', image_spec ),
+                'layer_ids': [ path_ids[0x0], path_ids[0x1], path_ids[0x3], path_ids[0x2] ],
             }, {
-                'args': ( '-l', '010101010101', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': (),
+                'args': ( '-l', path_ids[0x1], '-q', image_spec ),
+                'layer_ids': [ path_ids[0x1] ],
             }, {
-                'args': ( '-l', '010101010101:0', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': (),
+                'args': ( '-l', '{}:0'.format(path_ids[0x1]), '-q', image_spec ),
+                'layer_ids': [ path_ids[0x1], path_ids[0x0] ],
             }, {
-                'args': ( '-l', '010101010101:-1', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': (),
+                'args': ( '-l', '{}:-1'.format(path_ids[0x1]), '-q', image_spec ),
+                'layer_ids': path_ids[0x1:],
             }, {
-                'args': ( '-l', '000000000000:010101010101', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': (),
+                'args': ( '-l', '{}:{}'.format(path_ids[0x0], path_ids[0x1]), '-q', image_spec ),
+                'layer_ids': [ path_ids[0x0], path_ids[0x1] ],
             }, {
-                'args': ( '-l', '010101010101:ffffffffffff', '-q', 'IMAGE_SPEC' ),
-                'layer_ids': (),
+                'args': ( '-l', '{}:{}'.format(path_ids[0x1], path_ids[0xf]), '-q', image_spec ),
+                'layer_ids': path_ids[0x1:],
             }
         )
 
         for spec in specs:
             args = self._parser.parse_args(spec['args'])
-            selected_layers = selectlayers(args, self._fake_layers)
+            layers = inspectlayers(self._dc, args.image)
+            top_most_layer_id, selected_layers = selectlayers(args, layers)
             layer_ids = spec['layer_ids']
+            self.assertEqual(top_most_layer_id[:12], max(spec['layer_ids'], key=lambda i: i[-4:]), msg='spec: {!r}; selected_layers: {!r}'.format(spec, selected_layers))
             self.assertEqual(len(layer_ids), len(selected_layers), msg='spec: {!r}; selected_layers: {!r}'.format(spec, selected_layers))
 
             for layer_id, selected_layer in zip(layer_ids, selected_layers):
@@ -194,4 +174,10 @@ class CommandTestCase(TestCase):
             outfile = StringIO()
             printlayerinfo(args, selected_layers, outfile)
             outfile.seek(0)
-            self.assertEqual(tuple(( l.strip() for l in outfile )), layer_ids)
+            self.assertEqual([ l.strip() for l in outfile ], layer_ids)
+
+#---- Initialization -----------------------------------------------------
+
+if __name__ == '__main__':
+    from unittest import main
+    main()

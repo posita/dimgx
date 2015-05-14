@@ -12,7 +12,3 @@
 .. automodule:: dimgx
    :members:
    :special-members:
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

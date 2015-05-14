@@ -26,7 +26,7 @@ from future.builtins.disabled import * # pylint: disable=redefined-builtin,unuse
 
 #---- Imports ------------------------------------------------------------
 
-from .doctest_discovery import mkloadtests
+from tests.doctestdiscovery import mkloadtests
 import dimgx
 import tests
 
@@ -60,3 +60,9 @@ def load_tests(_, tests, __): # pylint: disable=redefined-outer-name
     assert in_len < out_len
 
     return tests
+
+#---- Initialization -----------------------------------------------------
+
+if __name__ == '__main__':
+    from unittest import main
+    main()

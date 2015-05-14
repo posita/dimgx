@@ -11,15 +11,16 @@
 #=========================================================================
 
 # Various build/test entities
-*.egg
-*.egg-info
-*.eggs
-*_flymake.py
+__pycache__
+_trial_temp
 .coverage
 .vagrant
 .venv-*
 .virtualenv
-_trial_temp
+*_flymake.py
+*.egg
+*.egg-info
+*.eggs
 build
 dist
 docs/_build

@@ -34,10 +34,6 @@ from traceback import (
     format_stack,
 )
 from dateutil.tz import tzutc
-from docker.errors import (
-    APIError,
-    DockerException,
-)
 from humanize import naturaltime as _naturaltime
 from requests import RequestException
 
@@ -52,9 +48,9 @@ TZ_UTC = tzutc()
 #=========================================================================
 class UnsafeTarPath(Exception):
     """
-    Raised before an entry is extracted from a tar archive if it has an
-    unsafe path (usually either an absolute path, or one that contains
-    "``..``" or equivalent).
+    Raised before an entry is extracted from a Docker tar archive if it
+    has an unsafe path (usually either an absolute path, or one that
+    contains "``..``" or equivalent).
     """
 
 #---- Functions ----------------------------------------------------------
@@ -90,10 +86,15 @@ def _logexception(logger, lvl, msg_fmt, f, *args, **kw):
 
         return f(*args, **kw)
     except EnvironmentError as e:
+        if e.strerror:
+            msg_e = e.strerror
+        else:
+            msg_e = e
+
         last_type, last_value, last_tb = sys.exc_info()
 
         try:
-            _debugtrace(logger, lvl, msg_fmt.format(e=e.strerror), last_type, last_value, last_tb)
+            _debugtrace(logger, lvl, msg_fmt.format(e=msg_e), last_type, last_value, last_tb)
         finally:
             del last_type, last_value, last_tb # break circular references
 

@@ -32,6 +32,7 @@ from argparse import (
 )
 from collections import OrderedDict
 from errno import errorcode
+from functools import wraps
 from logging import (
     DEBUG,
     ERROR,
@@ -68,7 +69,6 @@ from sys import (
     stdout,
 )
 from tarfile import open as tarfile_open
-from dateutil.parser import parse as dateutil_parse
 from docker import Client
 from docker.utils.utils import DEFAULT_UNIX_SOCKET as DOCKER_DEFAULT_UNIX_SOCKET
 from humanize import naturalsize
@@ -118,7 +118,7 @@ Negative indexes count from the end (i.e., "-i" is equivalent to "n - i").
 Layers may also be specified as ranges in the form "i:j" (where "i" and "j" are indexes or image IDs).
 The range "j:i" is equivalent to the reverse of the range "i:j".
 Ranges are inclusive, meaning "i:i" is equivalent to "i".
-If no layers are specified, all layers are inferred, starting with the primogenitor, and ending with the specified image (i.e., "0:-1").
+If no layers are specified, all layers are inferred, starting with the root (i.e., primogenitor), and ending with the specified image (i.e., "0:-1").
 Layers are extracted in order, which means that files from layers specified later in the command line will overwrite (or block) those from earlier ones where there is a conflict.
 Ordering is resolved before retrieval so that each distinct layer is only extracted once.
 """
@@ -132,9 +132,10 @@ If a target is provided, the specified layers will be extracted and written to t
 
 #=========================================================================
 def exitonraise(f):
-    def _wrapper(*args, **kw):
+    @wraps(f)
+    def _wrapper(*_args, **_kw):
         try:
-            return f(*args, **kw)
+            return f(*_args, **_kw)
         except: # pylint: disable=bare-except
             sys_exit(_EXIT_EXEC)
 
@@ -179,7 +180,7 @@ def buildparser():
     return parser
 
 #=========================================================================
-def extractlayers(dc, args, layers):
+def extractlayers(dc, args, layers, top_most_layer_id):
     target_path = args.target
     flags = O_WRONLY
 
@@ -225,14 +226,14 @@ def extractlayers(dc, args, layers):
             open_args['mode'] = mode.format(args.compression)
 
         with tarfile_open(**open_args) as tar_file:
-            dimgx_extractlayers(dc, layers, tar_file)
+            dimgx_extractlayers(dc, layers, tar_file, top_most_layer_id)
 
 #=========================================================================
 def layerspec2index(args, layers, layer_spec_part):
     if layer_spec_part is None:
         return None
 
-    num_layers = len(layers['layers_list'])
+    num_layers = len(layers[':layers'])
 
     if len(layer_spec_part) < 12:
         try:
@@ -284,7 +285,7 @@ def main():
     getLogger().setLevel(logging_getLevelName(args.log_level))
     dc = Client(args.docker_host)
     layers = inspectlayers(dc, args.image)
-    selected_layers = selectlayers(args, layers)
+    top_most_layer_id, selected_layers = selectlayers(args, layers)
 
     if not selected_layers:
         _LOGGER.warning('no known layers selected')
@@ -292,7 +293,7 @@ def main():
     if args.target is None:
         printlayerinfo(args, selected_layers)
     else:
-        extractlayers(dc, args, selected_layers)
+        extractlayers(dc, args, selected_layers, top_most_layer_id)
 
 #=========================================================================
 def printlayerinfo(args, layers, outfile=stdout):
@@ -308,12 +309,12 @@ def printlayerinfo(args, layers, outfile=stdout):
 
     for l in layers:
         image_id = l['Id'][:12].lower()
-        parent_id = l.get('Parent', '')[:12].lower()
+        parent_id = l[':parent_id'][:12].lower()
 
         if not parent_id:
             parent_id = '-'
 
-        created = naturaltime(dateutil_parse(l['Created']))
+        created = naturaltime(l[':created_dt'])
         layer_size = naturalsize(l['Size'])
         total_size += l['Size']
         virt_size = naturalsize(total_size)
@@ -324,7 +325,7 @@ def selectlayers(args, layers):
     layer_specs = args.layers
 
     if layer_specs is None:
-        selected_indexes = list(range(len(layers['layers_list'])))
+        selected_indexes = list(range(len(layers[':layers'])))
     else:
         selected_indexes = []
         last_num_selected_indexes = num_selected_indexes = len(selected_indexes)
@@ -368,6 +369,7 @@ def selectlayers(args, layers):
         if i not in seen:
             seen[i] = None # use OrderedDict as an ordered set
 
-    selected_layers = [ layers['layers_list'][i] for i in seen ][::-1]
+    top_most_layer_id = None if not seen else layers[':layers'][max(seen)][':id']
+    selected_layers = [ layers[':layers'][i] for i in seen ][::-1]
 
-    return selected_layers
+    return top_most_layer_id, selected_layers
