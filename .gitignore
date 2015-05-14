@@ -15,7 +15,6 @@ __pycache__
 _trial_temp
 .coverage
 .vagrant
-.venv-*
 .virtualenv
 *_flymake.py
 *.egg
@@ -61,8 +60,8 @@ nohup.out
 .DS_Store?
 .Spotlight-V100
 .Trashes
-Thumbs.db
 desktop.ini
 ehthumbs.db
+Thumbs.db
 
 # Exceptions
