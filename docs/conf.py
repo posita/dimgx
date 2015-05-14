@@ -15,6 +15,7 @@
 import os
 import shlex
 import sys
+sys.path.append('..')
 from setup import _SETUP_ARGS
 
 # If extensions (or modules to document with autodoc) are in another directory,
