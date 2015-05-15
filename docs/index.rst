@@ -28,17 +28,44 @@ This can be useful for debugging a |Dockerfile|_ or extracting a supplemental ro
 .. |Dockerfile| replace:: ``Dockerfile``
 .. _`Dockerfile`: https://docs.docker.com/reference/builder/
 
+License
+-------
+
+Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
+
+.. |(c)| unicode:: u+a9
+.. _`Matt Bogosian`: mailto:mtb19@columbia.edu?Subject=dimgx
+.. |@posita| replace:: **@posita**
+.. _`@posita`: https://github.com/posita
+
+This software is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_.
+Source code is `available on GitHub <https://github.com/posita/py-dimgx>`__.
+Please see the accompanying |LICENSE|_ (or |LICENSE.txt|_) file for rights and restrictions governing use of this software.
+All rights not expressly waived or licensed are reserved.
+If such a file did not accompany this software, then please contact the author before viewing or using this software in any capacity.
+
+.. |LICENSE| replace:: ``LICENSE``
+.. _`LICENSE`: _sources/LICENSE.txt
+.. |LICENSE.txt| replace:: ``LICENSE.txt``
+.. _`LICENSE.txt`: _sources/LICENSE.txt
+
 Requirements
 ------------
 
 ``dimgx`` has the following dependencies:
 
 * one of:
-  * `cPython <https://www.python.org/`_` (2.7 or 3.3+)
+
+  * `cPython <https://www.python.org/>`_ (2.7 or 3.3+)
+
   * `PyPy <http://pypy.org/>`_ (Python 2.7 or 3.3+ compatible)
+
 * |docker-py|_
+
 * |future|_
+
 * |humanize|_
+
 * |python-dateutil|_
 
 .. |docker-py| replace:: ``docker-py``
@@ -52,27 +79,6 @@ Requirements
 
 .. |python-dateutil| replace:: ``python-dateutil``
 .. _`python-dateutil`: https://dateutil.readthedocs.org/en/latest/
-
-License
--------
-
-Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
-
-.. |(c)| unicode:: u+a9
-.. _`Matt Bogosian`: mailto:mtb19@columbia.edu?Subject=dimgx
-.. |@posita| replace:: **@posita**
-.. _`@posita`: https://github.com/posita
-
-This software is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_.
-Source code is `available on GitHub <https://github.com/posita/py-dimgx`__.
-Please see the accompanying |LICENSE|_ (or |LICENSE.txt|_) file for rights and restrictions governing use of this software.
-All rights not expressly waived or licensed are reserved.
-If such a file did not accompany this software, then please contact the author before viewing or using this software in any capacity.
-
-.. |LICENSE| replace:: ``LICENSE``
-.. _`LICENSE`: _sources/LICENSE.txt
-.. |LICENSE.txt| replace:: ``LICENSE.txt``
-.. _`LICENSE.txt`: _sources/LICENSE.txt
 
 Examples
 --------
