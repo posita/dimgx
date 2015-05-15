@@ -51,7 +51,7 @@ INSTALL_REQUIRES = (
 
 _SETUP_ARGS = {
     'name'                : 'dimgx',
-    'version'             : '0.1.0',
+    'version'             : '0.1.0a1',
     'author'              : 'Matt Bogosian',
     'author_email'        : 'mtb19@columbia.edu',
     'url'                 : 'https://github.com/posita/py-dimgx',
