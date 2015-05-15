@@ -160,12 +160,6 @@ Limitations
 .. |docker.Client.get_image| replace:: ``docker.Client.get_image()``
 .. _`docker.Client.get_image`: https://docker-py.readthedocs.org/en/latest/api/#get_image
 
-* |docker.Client.get_image|_ buffers the entire hierarchy into memory.
-  ``dimgx`` won't work well if your layer size is much larger than your available memory.
-  This could be worked around by calling the `Docker REST API <https://docs.docker.com/reference/api/docker_remote_api/>`__ directly and handling the return stream in chunks as it arrives.
-
-..
-
 * Unit test coverage is minimal.
 
 ..

@@ -195,21 +195,19 @@ def extractlayers(dc, layers, tar_file, top_most_layer=-1):
     try:
         image = logexception(_LOGGER, ERROR, 'unable to retrieve image layers from "{}": {{e}}'.format(image_spec), dc.get_image, image_spec)
 
-        with BytesIO(image.data) as image_source_file:
-            with tarfile_open(fileobj=image_source_file) as image_tar_file:
+        with tarfile_open(mode='r|*', fileobj=image) as image_tar_file:
+            next_info = image_tar_file.next()
+
+            while next_info:
+                next_path = path_realpath(path_join(tmp_dir, next_info.name))
+
+                if not next_path.startswith(tmp_dir):
+                    exc = UnsafeTarPath('unsafe path: "{}"'.format(next_info.name))
+                    logexception(_LOGGER, ERROR, 'unable to retrieve entry from export of "{}": {{e}}'.format(image_spec), exc)
+
+                image_tar_file.extract(next_info, tmp_dir)
                 next_info = image_tar_file.next()
 
-                while next_info:
-                    next_path = path_realpath(path_join(tmp_dir, next_info.name))
-
-                    if not next_path.startswith(tmp_dir):
-                        exc = UnsafeTarPath('unsafe path: "{}"'.format(next_info.name))
-                        logexception(_LOGGER, ERROR, 'unable to retrieve entry from export of "{}": {{e}}'.format(image_spec), exc)
-
-                    image_tar_file.extract(next_info, tmp_dir)
-                    next_info = image_tar_file.next()
-
-        del image # this could be fairly large
         seen = set()
         deleted = set()
 
@@ -370,6 +368,8 @@ def normalizeimage(image_desc, copy=False):
     :returns: the normalized image description (:obj:`image_desc` if
               :obj:`copy` is :const:`False`)
 
+    This method is attempts to address certain `Docker API inconsistencies
+    <https://github.com/docker/docker/issues/5893#issuecomment-102398746>`__.
     The following keys are added to :obj:`image_desc`:
 
     * :attr:`':id'` - a normalized :attr:`'Id'`
@@ -392,12 +392,12 @@ def normalizeimage(image_desc, copy=False):
     else:
         image = image_desc
 
-    image_id = image['Id'].lower()
+    image_id = image.get('Id', image.get('id')).lower()
     image[':id'] = image_id
-    image[':parent_id'] = image.get('ParentId', image.get('Parent', '')).lower()
+    image[':parent_id'] = image.get('ParentId', image.get('Parent', image.get('parent', ''))).lower()
     image_short_id = image_id[:12]
     image[':short_id'] = image_short_id
-    image_created = image['Created']
+    image_created = image.get('Created', image.get('created'))
 
     if isinstance(image_created, int):
         # Work-around for
