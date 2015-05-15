@@ -3,6 +3,17 @@
 
 #=========================================================================
 """
+  The ``dimgx`` Python Module
+  ===========================
+
+  Utilities for programmatically inspecting `Docker
+  <https://www.docker.com/whatisdocker/>`_ `images
+  <https://docs.docker.com/terms/image/>`__ and extracting their `layers
+  <https://docs.docker.com/terms/layer/>`__.
+
+  Notice
+  ------
+
   Copyright |(c)| 2015 `Matt Bogosian`_ (|@posita|_).
 
   .. |(c)| unicode:: u+a9
@@ -15,14 +26,6 @@
   not expressly waived or licensed are reserved. If such a file did not
   accompany this software, then please contact the author before viewing
   or using this software in any capacity.
-
-  The ``dimgx`` Python Module
-  ===========================
-
-  Utilities for programmatically inspecting `Docker
-  <https://www.docker.com/whatisdocker/>`_ `images
-  <https://docs.docker.com/terms/image/>`__ and extracting their `layers
-  <https://docs.docker.com/terms/layer/>`__.
 
   Examples
   --------

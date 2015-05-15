@@ -7,7 +7,10 @@
    Thank you!
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
+   :hidden:
+
+   index
 
 .. automodule:: dimgx
    :members:
