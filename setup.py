@@ -77,6 +77,7 @@ _SETUP_ARGS = {
     'url'                 : 'https://github.com/posita/py-dimgx',
     'license'             : 'MIT License',
     'description'         : 'extract and flatten Docker image layers',
+    'long_description'    : open(ospath_join(_MY_DIR, 'README.rst')).read(),
 
     # From <http://pypi.python.org/pypi?%3Aaction=list_classifiers>
     'classifiers': (
