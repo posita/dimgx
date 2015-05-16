@@ -23,12 +23,20 @@ from __future__ import (
 
 from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
+from future.utils import iteritems
 # pylint: disable=missing-super-argument
 
 #---- Imports ------------------------------------------------------------
 
 from copy import deepcopy
 from datetime import datetime
+from operator import itemgetter
+from os import curdir
+from os.path import (
+    expanduser,
+    expandvars,
+    join as ospath_join,
+)
 from tarfile import TarFile
 from unittest import TestCase
 from docker.errors import APIError
@@ -63,17 +71,10 @@ class DimgxTestCase(TestCase):
         self._dc = FauxDockerClient()
 
     #=====================================================================
-    def test_extractall_path0(self):
+    def test_extractall(self):
         specs = (
-            ( 'getto:dachoppa', slice(None), _EMTPY_TAR_SHA256, -1 ),
-            ( 'getto:dachoppa', slice(None, None, -1), _EMTPY_TAR_SHA256, 0 ),
-        )
-
-        self._check_specs(specs)
-
-    #=====================================================================
-    def test_extractall_path1(self):
-        specs = (
+            ( 'getto:dachoppa', slice(None), 'ffd384a2a277c9c1183e5f28da244cc0f4fe92d45e273eaf142dcc4e8fd0e5ef', -1 ),
+            ( 'getto:dachoppa', slice(None, None, -1), 'b0e0a8950b060d8cbe6a990ee693a60a3004aea4130c8735cee1bd96706b0173', 0 ),
             ( 'greatest:hits', slice(None), '2b4042d4244b34da51f3a9b761e20f717809c8d68cf53e9c03b2a2e41dae71ca', -1 ),
             ( 'greatest:hits', slice(None, None, -1), '896e1e38159e7f408bada39e8c095fcd8a171ea9de7e2b7363b5bff505a93842', 0 ),
         )
@@ -83,8 +84,8 @@ class DimgxTestCase(TestCase):
     #=====================================================================
     def test_extractempty(self):
         specs = (
-            ( 'getto:dachoppa', ( 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf ), _EMTPY_TAR_SHA256, -1 ),
-            ( 'getto:dachoppa', ( 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf )[::-1], _EMTPY_TAR_SHA256, 0 ),
+            ( 'getto:dachoppa', ( 0x3, 0x4, 0x5, 0x6, 0x7, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf ), _EMTPY_TAR_SHA256, -1 ),
+            ( 'getto:dachoppa', ( 0x3, 0x4, 0x5, 0x6, 0x7, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf )[::-1], _EMTPY_TAR_SHA256, 0 ),
             ( 'getto:dachoppa', (), _EMTPY_TAR_SHA256, -1 ),
             ( 'greatest:hits', ( 0x1, 0x3, 0x5, 0x6, 0x7, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe ), _EMTPY_TAR_SHA256, -1 ),
             ( 'greatest:hits', ( 0x1, 0x3, 0x5, 0x6, 0x7, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe )[::-1], _EMTPY_TAR_SHA256, 0 ),
@@ -96,42 +97,24 @@ class DimgxTestCase(TestCase):
     #=====================================================================
     def test_extractcombos_path0(self):
         specs = (
-            ( 'getto:dachoppa', ( 0x0, ), _EMTPY_TAR_SHA256, 0 ),
-            ( 'getto:dachoppa', ( 0x1, ), _EMTPY_TAR_SHA256, 0 ),
-            ( 'getto:dachoppa', ( 0x2, ), _EMTPY_TAR_SHA256, 0 ),
-            ( 'getto:dachoppa', ( 0x0, 0x1 ), _EMTPY_TAR_SHA256, 1 ),
-            ( 'getto:dachoppa', ( 0x0, 0x2 ), _EMTPY_TAR_SHA256, 1 ),
-            ( 'getto:dachoppa', ( 0x1, 0x0 ), _EMTPY_TAR_SHA256, 0 ),
-            ( 'getto:dachoppa', ( 0x1, 0x2 ), _EMTPY_TAR_SHA256, 1 ),
-            ( 'getto:dachoppa', ( 0x2, 0x0 ), _EMTPY_TAR_SHA256, 0 ),
-            ( 'getto:dachoppa', ( 0x2, 0x1 ), _EMTPY_TAR_SHA256, 0 ),
-            ( 'getto:dachoppa', ( 0x0, 0x1, 0x2 ), _EMTPY_TAR_SHA256, 2 ),
-            ( 'getto:dachoppa', ( 0x0, 0x2, 0x1 ), _EMTPY_TAR_SHA256, 1 ),
-            ( 'getto:dachoppa', ( 0x1, 0x0, 0x2 ), _EMTPY_TAR_SHA256, 2 ),
-            ( 'getto:dachoppa', ( 0x1, 0x2, 0x0 ), _EMTPY_TAR_SHA256, 1 ),
-            ( 'getto:dachoppa', ( 0x2, 0x0, 0x1 ), _EMTPY_TAR_SHA256, 0 ),
-            ( 'getto:dachoppa', ( 0x2, 0x1, 0x0 ), _EMTPY_TAR_SHA256, 0 ),
+            ( 'getto:dachoppa', ( 0x0, ), 'b0e0a8950b060d8cbe6a990ee693a60a3004aea4130c8735cee1bd96706b0173', 0 ),
+            ( 'getto:dachoppa', ( 0x1, ), '9dc4223cfbbd67074f22187b5b79ef2b980ec84dea77e71622db26df31284cc3', 0 ),
+            ( 'getto:dachoppa', ( 0x2, ), 'ffd384a2a277c9c1183e5f28da244cc0f4fe92d45e273eaf142dcc4e8fd0e5ef', 0 ),
+            ( 'getto:dachoppa', ( 0x0, 0x1 ), '9dc4223cfbbd67074f22187b5b79ef2b980ec84dea77e71622db26df31284cc3', 1 ),
+            ( 'getto:dachoppa', ( 0x0, 0x2 ), 'ffd384a2a277c9c1183e5f28da244cc0f4fe92d45e273eaf142dcc4e8fd0e5ef', 1 ),
+            ( 'getto:dachoppa', ( 0x1, 0x0 ), 'b0e0a8950b060d8cbe6a990ee693a60a3004aea4130c8735cee1bd96706b0173', 0 ),
+            ( 'getto:dachoppa', ( 0x1, 0x2 ), 'ffd384a2a277c9c1183e5f28da244cc0f4fe92d45e273eaf142dcc4e8fd0e5ef', 1 ),
+            ( 'getto:dachoppa', ( 0x2, 0x0 ), 'b0e0a8950b060d8cbe6a990ee693a60a3004aea4130c8735cee1bd96706b0173', 0 ),
+            ( 'getto:dachoppa', ( 0x2, 0x1 ), '9dc4223cfbbd67074f22187b5b79ef2b980ec84dea77e71622db26df31284cc3', 0 ),
+            ( 'getto:dachoppa', ( 0x0, 0x1, 0x2 ), 'ffd384a2a277c9c1183e5f28da244cc0f4fe92d45e273eaf142dcc4e8fd0e5ef', 2 ),
+            ( 'getto:dachoppa', ( 0x0, 0x2, 0x1 ), '9dc4223cfbbd67074f22187b5b79ef2b980ec84dea77e71622db26df31284cc3', 1 ),
+            ( 'getto:dachoppa', ( 0x1, 0x0, 0x2 ), 'ffd384a2a277c9c1183e5f28da244cc0f4fe92d45e273eaf142dcc4e8fd0e5ef', 2 ),
+            ( 'getto:dachoppa', ( 0x1, 0x2, 0x0 ), 'b0e0a8950b060d8cbe6a990ee693a60a3004aea4130c8735cee1bd96706b0173', 1 ),
+            ( 'getto:dachoppa', ( 0x2, 0x0, 0x1 ), '9dc4223cfbbd67074f22187b5b79ef2b980ec84dea77e71622db26df31284cc3', 0 ),
+            ( 'getto:dachoppa', ( 0x2, 0x1, 0x0 ), 'b0e0a8950b060d8cbe6a990ee693a60a3004aea4130c8735cee1bd96706b0173', 0 ),
         )
 
         self._check_specs(specs)
-
-        # foo = {}
-        #
-        # for image_id, indexes, hexdigest, top_most_layer in specs:
-        #     hash_tar = self._get_hash_tar(image_id, indexes, top_most_layer)
-        #     actual_hexdigest = hash_tar.hash_obj.hexdigest()
-        #
-        #     with open('/Users/matt/Desktop/tars/{}.tar'.format(actual_hexdigest), 'wb') as out_file:
-        #         try:
-        #             foo_list = foo[actual_hexdigest]
-        #         except KeyError:
-        #             foo_list = foo[actual_hexdigest] = []
-        #
-        #         foo_list.append(indexes)
-        #         out_file.write(hash_tar.getvalue())
-        #
-        # for f in foo:
-        #     print('{} -> {}'.format(f, foo[f]))
 
     #=====================================================================
     def test_extractcombos_path1(self):
@@ -281,7 +264,32 @@ class DimgxTestCase(TestCase):
     def _check_specs(self, specs):
         for image_id, indexes, hexdigest, top_most_layer in specs:
             hash_tar = self._get_hash_tar(image_id, indexes, top_most_layer)
-            self.assertEqual(hash_tar.hash_obj.hexdigest(), hexdigest)
+            self.assertEqual(hash_tar.hash_obj.hexdigest(), hexdigest, msg='image: {}; indexes: {}'.format(image_id, indexes))
+
+    #=====================================================================
+    def _dump_tars(self, specs, dump_dir=curdir):
+        expanded_dump_dir = expandvars(expanduser(dump_dir))
+
+        hashes_to_indexes = {}
+
+        with open(ospath_join(expanded_dump_dir, '_dumped_entries.py'), 'wb') as dump_py_file:
+            for image_id, indexes, _, top_most_layer in specs:
+                hash_tar = self._get_hash_tar(image_id, indexes, top_most_layer)
+                actual_hexdigest = hash_tar.hash_obj.hexdigest()
+
+                with open(ospath_join(expanded_dump_dir, '{}.tar'.format(actual_hexdigest)), 'wb') as dump_tar_file:
+                    try:
+                        index_list = hashes_to_indexes[actual_hexdigest]
+                    except KeyError:
+                        index_list = hashes_to_indexes[actual_hexdigest] = []
+
+                    index_list.append(indexes)
+                    dump_tar_file.write(hash_tar.getvalue())
+
+                print("( '{}', ( {} ), '{}', {} ),".format(image_id, ', '.join(( '0x{:1x}'.format(i) for i in indexes )), actual_hexdigest, max(enumerate(indexes), key=itemgetter(1))[0]), file=dump_py_file)
+
+            for k, v in iteritems(hashes_to_indexes):
+                print('# {} -> {}'.format(k, v), file=dump_py_file)
 
     #=====================================================================
     def _get_hash_tar(self, image_id, indexes, top_most_layer):
@@ -294,9 +302,9 @@ class DimgxTestCase(TestCase):
                 layers = layers_dict[':layers'][indexes]
             else:
                 if indexes:
-                    self.assertLess(top_most_layer, len(indexes), 'indexes: {}; top_most_layer: {}'.format(indexes, top_most_layer))
-                    self.assertGreaterEqual(top_most_layer, -len(indexes), 'indexes: {}; top_most_layer: {}'.format(indexes, top_most_layer))
-                    self.assertEqual(indexes[top_most_layer], max(indexes), 'indexes: {}'.format(indexes))
+                    self.assertLess(top_most_layer, len(indexes), msg='image: {}; indexes: {}'.format(image_id, indexes))
+                    self.assertGreaterEqual(top_most_layer, -len(indexes), msg='image: {}; indexes: {}'.format(image_id, indexes))
+                    self.assertEqual(indexes[top_most_layer], max(indexes), msg='image: {}; indexes: {}'.format(image_id, indexes))
 
                 layers = [ layers_dict[':layers'][i] for i in indexes ]
 
