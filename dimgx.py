@@ -206,7 +206,7 @@ def extractlayers(dc, layers, tar_file, top_most_layer=-1):
                 next_info = image_tar_file.next()
 
         seen = set()
-        deleted = set()
+        hides_subtrees = set()
 
         # Look through each layer's archive (oldest to newest)
         for layer in layers[::-1]:
@@ -221,33 +221,33 @@ def extractlayers(dc, layers, tar_file, top_most_layer=-1):
                     next_basename = posixpath_basename(next_info.name)
 
                     if next_basename.startswith(_WHITEOUT_PFX):
-                        deleted_path = posixpath_join(next_dirname, next_basename[_WHITEOUT_PFX_LEN:])
-                        deleted.add(deleted_path)
+                        removed_path = posixpath_join(next_dirname, next_basename[_WHITEOUT_PFX_LEN:])
+                        hides_subtrees.add(( removed_path, 'removal' ))
 
-                        if deleted_path in seen:
-                            _LOGGER.debug('skipping deleted "%s"', deleted_path)
+                        if removed_path in seen:
+                            _LOGGER.debug('skipping removal "%s"', removed_path)
                         else:
-                            _LOGGER.debug('hiding "%s" as deleted', deleted_path)
+                            _LOGGER.debug('hiding "%s" as removed', removed_path)
+                    elif next_info.name in seen:
+                        _LOGGER.debug('skipping "%s" as overwritten', next_info.name)
                     else:
                         next_name_len = len(next_info.name)
-                        hidden_by_deleted = False
+                        hidden = None
 
-                        for d in deleted:
-                            if len(d) > next_name_len:
+                        for h, deverbal in hides_subtrees: # https://en.wikipedia.org/wiki/deverbal
+                            if len(h) > next_name_len:
                                 continue
 
-                            common_pfx = posixpath_commonprefix(( d, next_info.name ))
+                            common_pfx = posixpath_commonprefix(( h, next_info.name ))
                             common_pfx_len = len(common_pfx)
 
                             if next_name_len == common_pfx_len \
                                     or next_info.name[common_pfx_len:].startswith(posixpath_sep):
-                                hidden_by_deleted = True
+                                hidden = deverbal, h
                                 break
 
-                        if hidden_by_deleted:
-                            _LOGGER.debug('skipping "%s" as hidden by deletion', next_info.name)
-                        elif next_info.name in seen:
-                            _LOGGER.debug('skipping "%s" as overwritten', next_info.name)
+                        if hidden:
+                            _LOGGER.debug('skipping "%s" hidden by %s of %s', next_info.name, *hidden)
                         else:
                             mtime = naturaltime(datetime.utcfromtimestamp(next_info.mtime).replace(tzinfo=TZ_UTC))
                             _LOGGER.info('writing "%s" from "%s" to archive (size: %s; mode: %o; mtime: %s)', next_info.name, layer_id, naturalsize(next_info.size), next_info.mode, mtime)
@@ -262,6 +262,9 @@ def extractlayers(dc, layers, tar_file, top_most_layer=-1):
 
                             tar_file.addfile(next_info, fileobj)
                             seen.add(next_info.name)
+
+                            if not next_info.isdir():
+                                hides_subtrees.add(( next_info.name, 'presence' ))
 
                     next_info = layer_tar_file.next()
     finally:
