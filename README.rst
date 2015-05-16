@@ -13,11 +13,11 @@ Status
 ------
 
 .. image:: https://travis-ci.org/posita/py-dimgx.svg?branch=master
-   :target: https://travis-ci.org/posita/py-dimgx
+   :target: https://travis-ci.org/posita/py-dimgx?branch=master
    :alt: Build Status
 
-.. image:: https://coveralls.io/repos/posita/py-dimgx/badge.svg
-   :target: https://coveralls.io/r/posita/py-dimgx
+.. image:: https://coveralls.io/repos/posita/py-dimgx/badge.svg?branch=master
+   :target: https://coveralls.io/r/posita/py-dimgx?branch=master
    :alt: Coverage Status
 
 .. image:: https://readthedocs.org/projects/dimgx/badge/?version=master
