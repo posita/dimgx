@@ -82,12 +82,16 @@ _SETUP_ARGS = {
     # From <http://pypi.python.org/pypi?%3Aaction=list_classifiers>
     'classifiers': (
         'Topic :: Software Development :: Build Tools',
-        'Environment :: Console',
         'Development Status :: 3 - Alpha',
+        'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: System :: Archiving :: Packaging',
     ),
 

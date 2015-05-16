@@ -9,6 +9,26 @@
 ``dimgx``
 =========
 
+.. image:: https://pypip.in/version/dimgx/badge.svg
+   :target: https://pypi.python.org/pypi/dimgx/
+   :alt: Latest Version
+
+.. image:: https://pypip.in/status/dimgx/badge.svg
+   :target: https://pypi.python.org/pypi/dimgx/master
+   :alt: Development Status
+
+.. image:: https://pypip.in/license/dimgx/badge.svg
+   :target: https://pypi.python.org/pypi/dimgx/master
+   :alt: License
+
+.. image:: https://pypip.in/py_versions/dimgx/badge.svg
+   :target: https://pypi.python.org/pypi/dimgx/master
+   :alt: Supported Python versions
+
+.. image:: https://pypip.in/implementation/dimgx/badge.svg
+   :target: https://pypi.python.org/pypi/dimgx/master
+   :alt: Supported Python implementations
+
 Status
 ------
 
