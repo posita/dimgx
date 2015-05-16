@@ -20,8 +20,8 @@ Status
    :target: https://coveralls.io/r/posita/py-dimgx
    :alt: Coverage Status
 
-.. image:: https://readthedocs.org/projects/dimgx/badge/?version=latest
-   :target: https://dimgx.readthedocs.org/
+.. image:: https://readthedocs.org/projects/dimgx/badge/?version=master
+   :target: https://dimgx.readthedocs.org/en/master/
    :alt: Documentation Status
 
 Curious about integrating your project with the above services?
@@ -70,7 +70,7 @@ Jeff Knupp (|@jeffknupp|_) `describes how <http://www.jeffknupp.com/blog/2013/08
    9.0M    nifty.tar
 
 It is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_.
-See `the docs <https://dimgx.readthedocs.org/>`__ for more information.
+See `the docs <https://dimgx.readthedocs.org/en/master/>`__ for more information.
 
 Notice
 ------

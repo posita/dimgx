@@ -36,6 +36,16 @@ from setuptools import (
 import logging # pylint: disable=unused-import
 import multiprocessing # pylint: disable=unused-import
 
+from inspect import (
+    currentframe,
+    getframeinfo,
+)
+from os.path import (
+    dirname,
+    isfile,
+    join as ospath_join,
+)
+
 #---- Constants ----------------------------------------------------------
 
 __all__ = ()
@@ -47,11 +57,21 @@ INSTALL_REQUIRES = (
     'python-dateutil',
 )
 
+_MY_DIR = dirname(getframeinfo(currentframe()).filename)
+
 #---- Initialization -----------------------------------------------------
+
+_namespace = {
+    '__version__': '<none>',
+    '_version_path': ospath_join(_MY_DIR, '_dimgx', 'version.py'),
+}
+
+if isfile(_namespace['_version_path']):
+    exec(compile(open(_namespace['_version_path']).read(), _namespace['_version_path'], 'exec'), _namespace, _namespace) # pylint: disable=exec-used
 
 _SETUP_ARGS = {
     'name'                : 'dimgx',
-    'version'             : '0.1.0a1',
+    'version'             : _namespace['__version__'],
     'author'              : 'Matt Bogosian',
     'author_email'        : 'mtb19@columbia.edu',
     'url'                 : 'https://github.com/posita/py-dimgx',

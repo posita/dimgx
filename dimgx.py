@@ -100,6 +100,7 @@ from _dimgx import (
     logexception,
     naturaltime,
 )
+from _dimgx.version import __version__
 
 #---- Constants ----------------------------------------------------------
 
@@ -182,7 +183,7 @@ def extractlayers(dc, layers, tar_file, top_most_layer=-1):
     .. _`docker.Client`: https://docker-py.readthedocs.org/en/latest/api/
     """
     if not layers:
-        _LOGGER.warn('nothing to extract')
+        _LOGGER.warning('nothing to extract')
 
         return
 
