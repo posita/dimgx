@@ -37,6 +37,10 @@ from _dimgx.cmd import (
 from dimgx import inspectlayers
 from tests.fauxdockerclient import FauxDockerClient
 
+#---- Constants ----------------------------------------------------------
+
+__all__ = ()
+
 #---- Classes ------------------------------------------------------------
 
 #=========================================================================
@@ -162,8 +166,8 @@ class CommandTestCase(TestCase):
 
         for spec in specs:
             args = self._parser.parse_args(spec['args'])
-            layers = inspectlayers(self._dc, args.image)
-            top_most_layer_id, selected_layers = selectlayers(args, layers)
+            layers_dict = inspectlayers(self._dc, args.image)
+            top_most_layer_id, selected_layers = selectlayers(args, layers_dict)
             layer_ids = spec['layer_ids']
             self.assertEqual(top_most_layer_id[:12], max(spec['layer_ids'], key=lambda i: i[-4:]), msg='spec: {!r}; selected_layers: {!r}'.format(spec, selected_layers))
             self.assertEqual(len(layer_ids), len(selected_layers), msg='spec: {!r}; selected_layers: {!r}'.format(spec, selected_layers))

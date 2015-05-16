@@ -35,6 +35,22 @@ from functools import (
     wraps,
 )
 from hashlib import sha256
+from inspect import (
+    currentframe,
+    getframeinfo,
+)
+from io import BytesIO
+from os import stat
+from os.path import (
+    dirname,
+    join as ospath_join,
+)
+from tarfile import (
+    DIRTYPE,
+    TarInfo,
+    open as tarfile_open,
+)
+from time import time
 from dateutil.parser import parse as dateutil_parse
 from docker.errors import APIError
 from requests.exceptions import HTTPError
@@ -77,12 +93,12 @@ class FauxDockerClient(object):
 
     #=====================================================================
     @staticmethod
-    def _checkexc(f):
+    def _checkandraise(f):
         @wraps(f)
         def _wrapped(self, *_args, **_kw):
             # pylint: disable=protected-access
-            if self._raise_exc is not None:
-                raise self._raise_exc
+            if self._always_raise is not None:
+                raise self._always_raise
 
             return f(self, *_args, **_kw)
 
@@ -91,9 +107,10 @@ class FauxDockerClient(object):
     #---- Constructor ----------------------------------------------------
 
     #=====================================================================
-    def __init__(self, raise_exc=None):
+    def __init__(self, always_raise=None):
         super().__init__()
-        self._raise_exc = raise_exc
+        self._always_raise = always_raise
+        self._my_dir = dirname(getframeinfo(currentframe()).filename)
         self.layers = []
         self.layers_by_id = {}
         self.layers_by_tag = {}
@@ -111,12 +128,23 @@ class FauxDockerClient(object):
                 ids.append(layer_id[:8] + layer_sig)
                 layer_id = ids[-1] + layer_id[12:60] + layer_sig
                 last_layer_id = '' if i == 0 else self.layers[-1]['Id']
+                layer_tar_src_path = ospath_join(self._my_dir, 'data', layer_id[:12], 'layer.tar')
+
+                try:
+                    # This isn't quite right, but it doesn't matter for
+                    # our purposes
+                    layer_tar_src_stat = stat(layer_tar_src_path)
+                    layer_size = layer_tar_src_stat.st_size
+                except OSError:
+                    layer_size = 0
+
                 self.layers.append({
-                    'Created': '2015-05-{:02d}T{:02d}:00:{:02d}.000000000Z'.format(i + 10, i, j),
+                    'Created': '2015-04-{:02d}T{:02d}:00:{:02d}.000000000Z'.format(i + 10, i, j),
                     'Id': layer_id,
                     'Parent': last_layer_id,
-                    'Size': int(layer_id[:7], 16),
+                    'Size': layer_size,
                     'RepoTags': [ '<none>:<none>' ],
+                    'VirtualSize': layer_size if i == 0 else layer_size + self.layers[-1]['Size'],
                 })
                 assert ids[-1] == FauxDockerClient.IDS_BY_PATH[j][i]
 
@@ -135,37 +163,76 @@ class FauxDockerClient(object):
             assert k == v['Id'][:len(k)].lower()
 
         assert self.layers_by_tag['getto:dachoppa'] == self.layers[-1 - path_depth]
+        assert self.layers_by_tag['getto:dachoppa']['Id'][:12] == self.ids_by_path[0][-1]
         assert self.layers_by_tag['greatest'] == self.layers[-1]
         assert self.layers_by_tag['greatest:hits'] == self.layers[-1]
-        assert self.layers_by_tag['greatest:latest'] == self.layers[-1]
-        assert self.layers_by_tag['getto:dachoppa']['Id'][:12] == self.ids_by_path[0][-1]
         assert self.layers_by_tag['greatest:hits']['Id'][:12] == self.ids_by_path[1][-1]
+        assert self.layers_by_tag['greatest:latest'] == self.layers[-1]
 
         self.layers.sort(key=lambda i: imagekey(normalizeimage(i, copy=True)))
 
     #---- Public hook methods --------------------------------------------
 
     #=====================================================================
-    @_checkexc.__func__
+    @_checkandraise.__func__
     def get_image(self, image):
-        raise APIError(HTTPError('404 Client Error: Not Found'))
+        if not image:
+            raise APIError(HTTPError('500 Server Error'), None, explanation='Usage: image_export IMAGE [IMAGE...]')
+
+        layers = []
+        next_layer_id = image
+
+        while next_layer_id:
+            layer = normalizeimage(self._findlayer(next_layer_id), copy=True)
+            layers.append(layer)
+            next_layer_id = layers[-1][':parent_id']
+
+        layers.reverse()
+        image_file = BytesIO()
+        mtime = time()
+
+        with tarfile_open(mode='w', fileobj=image_file) as image_tar_file:
+            for layer in layers:
+                ti_dir = TarInfo(layer[':id'])
+                ti_dir.mtime = mtime
+                ti_dir.mode = 0o755
+                ti_dir.type = DIRTYPE
+                image_tar_file.addfile(ti_dir)
+
+                layer_tar_src_path = ospath_join(self._my_dir, 'data', layer[':short_id'], 'layer.tar')
+
+                with open(layer_tar_src_path, 'rb') as layer_tar_src_file:
+                    layer_tar_dst_path = '{}/layer.tar'.format(layer[':id'])
+                    ti_layer = image_tar_file.gettarinfo(layer_tar_src_path, layer_tar_dst_path)
+                    ti_layer.mtime = mtime
+                    ti_layer.mode = 0o644
+                    ti_layer.uid = ti_layer.gid = 0
+                    ti_layer.uname = ti_layer.gname = ''
+                    image_tar_file.addfile(ti_layer, fileobj=layer_tar_src_file)
+
+        image_file.seek(0)
+
+        return image_file
 
     #=====================================================================
-    @_checkexc.__func__
+    @_checkandraise.__func__
     def images(self, name=None, quiet=False, all=False, viz=False, filters=None): # pylint: disable=redefined-outer-name
-        if quiet \
-                or not all \
-                or viz \
-                or filters:
-            raise NotImplementedError()
+        checks = (
+            ( not quiet, '"quiet" must be False' ),
+            ( all or False, '"all" must be True' ),
+            ( not viz, '"viz" must be False' ),
+            ( filters is None, '"filters" must be None' ),
+        )
+
+        for passed, err in checks:
+            if not passed:
+                raise NotImplementedError(err)
 
         if name:
-            candidates = []
-
-            if name.lower() in self.layers_by_id:
-                candidates.append(self.layers_by_id[name])
-            elif name in self.layers_by_tag:
-                candidates.append(self.layers_by_tag[name])
+            try:
+                candidates = [ self._findlayer(name) ]
+            except APIError:
+                candidates = []
         else:
             candidates = self.layers
 
@@ -178,14 +245,28 @@ class FauxDockerClient(object):
                 'ParentId': candidate['Parent'],
                 'RepoTags': candidate['RepoTags'],
                 'Size': candidate['Size'],
+                'VirtualSize': candidate['VirtualSize'],
             })
 
         return images
 
     #=====================================================================
-    @_checkexc.__func__
+    @_checkandraise.__func__
     def inspect_image(self, image_id): # pylint: disable=unused-argument
         raise NotImplementedError()
+
+    #---- Protected methods ----------------------------------------------
+
+    #=====================================================================
+    @_checkandraise.__func__
+    def _findlayer(self, image_id):
+        if image_id.lower() in self.layers_by_id:
+            return self.layers_by_id[image_id]
+
+        if image_id in self.layers_by_tag:
+            return self.layers_by_tag[image_id]
+
+        raise APIError(HTTPError('404 Client Error: Not Found'), None, explanation='No such image: {}'.format(image_id))
 
 #---- Functions ----------------------------------------------------------
 

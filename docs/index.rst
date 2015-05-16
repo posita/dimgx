@@ -19,11 +19,13 @@
 
 .. [#pronunciation] World Book Online (WBO) style `pronunciation respelling <https://en.wikipedia.org/wiki/Pronunciation_respelling_for_English>`__.
 
-This can be useful for debugging a |Dockerfile|_ or extracting a supplemental root file system for extending a base image::
+This can be useful for debugging a |Dockerfile|_ or extracting a supplemental root file system for extending a base image:
 
-  % cat Dockerfile
-  FROM debian:jessie
-  ADD mychanges.tar.xz # extracted with dimgx
+.. code-block:: sh
+
+   % cat Dockerfile
+   FROM debian:jessie
+   ADD mychanges.tar.xz # extracted with dimgx
 
 .. |Dockerfile| replace:: ``Dockerfile``
 .. _`Dockerfile`: https://docs.docker.com/reference/builder/
@@ -83,58 +85,70 @@ Requirements
 Examples
 --------
 
-``dimgx`` can be called from the command line via Python's ``-m`` option::
+.. code-block:: sh
 
-  % python -m dimgx
-  usage:
-  dimgx.py [options] [-l LAYER_SPEC] ... [-t PATH] IMAGE_SPEC
-  dimgx.py -h # for help
-  dimgx.py: error: too few arguments
+   % dimgx
+   usage:
+   dimgx [options] [-l LAYER_SPEC] ... [-t PATH] IMAGE_SPEC
+   dimgx -h # for help
+   dimgx: error: too few arguments
 
-Extract and flatten the first three layers of the image named ``nifty-box`` into an archive called ``nifty.tar``::
+Extract and flatten the first three layers of the image named ``nifty-box`` into an archive called ``nifty.tar``:
 
-  % python -m dimgx -l 0:2 -r -t nifty.tar nifty-box
+.. code-block:: sh
 
-Extract and flatten the most recent three layers of the image named ``nifty-box`` into an archive with bzip2 compression written to ``STDOUT`` (note that there is no space after the ``-l`` option when a range begins with a negative index; this is to work around a `limitation <https://docs.python.org/2/library/argparse.html#arguments-containing>`__ of Python's :py:mod:`argparse` module)::
+   % dimgx -l 0:2 -r -t nifty.tar nifty-box
 
-  % python -m dimgx -l-3:-1 -r -t - --bzip2 nifty-box >nifty.tar.bz2
+Extract and flatten the most recent three layers of the image named ``nifty-box`` into an archive with bzip2 compression written to ``STDOUT`` (note that there is no space after the ``-l`` option when a range begins with a negative index; this is to work around a `limitation <https://docs.python.org/2/library/argparse.html#arguments-containing>`__ of Python's :py:mod:`argparse` module):
 
-LZMA2 compression is not supported natively, but output can be piped to an external utility::
+.. code-block:: sh
 
-  % python -m dimgx -t - nifty-box | xz -9c >nifty.tar.xz
+   % dimgx -l-3:-1 -r -t - --bzip2 nifty-box >nifty.tar.bz2
 
-Omit the target to display the layer extraction order (and some other information) without performing any retrieval or extraction::
+LZMA2 compression is not supported natively, but output can be piped to an external utility:
 
-  % python -m dimgx -l 1:2 -l 6:5 -l 3 nifty-box
-  IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
-  41b730702607    3cb35ae859e7    12 days ago     0 Bytes         0 Bytes
-  60aa72e3db11    41b730702607    2 days ago      0 Bytes         0 Bytes
-  0bb92bb75744    51a39b466ad7    34 minutes ago  1.7 kB          1.7 kB
-  51a39b466ad7    fec4e64b2b57    2 days ago      0 Bytes         1.7 kB
-  390ac3ff1e87    60aa72e3db11    2 days ago      1.7 kB          3.4 kB
+.. code-block:: sh
 
-Image IDs can be used in lieu of or mixed with indexes::
+   % dimgx -t - nifty-box | xz -9c >nifty.tar.xz
 
-  % python -m dimgx -l 41b730702607:2 -l 6:51a39b466ad7 -l 390ac3ff1e87 nifty-box
-  IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
-  41b730702607    3cb35ae859e7    12 days ago     0 Bytes         0 Bytes
-  60aa72e3db11    41b730702607    2 days ago      0 Bytes         0 Bytes
-  0bb92bb75744    51a39b466ad7    34 minutes ago  1.7 kB          1.7 kB
-  51a39b466ad7    fec4e64b2b57    2 days ago      0 Bytes         1.7 kB
-  390ac3ff1e87    60aa72e3db11    2 days ago      1.7 kB          3.4 kB
+Omit the target (the ``-t`` option) to display the layer extraction order (and some other information) without performing any retrieval or extraction:
+
+.. code-block:: sh
+
+   % dimgx -l 1:2 -l 6:5 -l 3 nifty-box
+   IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
+   41b730702607    3cb35ae859e7    12 days ago     0 Bytes         0 Bytes
+   60aa72e3db11    41b730702607    2 days ago      0 Bytes         0 Bytes
+   0bb92bb75744    51a39b466ad7    34 minutes ago  1.7 kB          1.7 kB
+   51a39b466ad7    fec4e64b2b57    2 days ago      0 Bytes         1.7 kB
+   390ac3ff1e87    60aa72e3db11    2 days ago      1.7 kB          3.4 kB
+
+Image IDs can be used in lieu of or mixed with indexes:
+
+.. code-block:: sh
+
+   % dimgx -l 41b730702607:2 -l 6:51a39b466ad7 -l 390ac3ff1e87 nifty-box
+   IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
+   41b730702607    3cb35ae859e7    12 days ago     0 Bytes         0 Bytes
+   60aa72e3db11    41b730702607    2 days ago      0 Bytes         0 Bytes
+   0bb92bb75744    51a39b466ad7    34 minutes ago  1.7 kB          1.7 kB
+   51a39b466ad7    fec4e64b2b57    2 days ago      0 Bytes         1.7 kB
+   390ac3ff1e87    60aa72e3db11    2 days ago      1.7 kB          3.4 kB
 
 Limitations
 -----------
 
 * Files deleted from one layer to another are `handled specially <http://aufs.sourceforge.net/aufs.html#Incompatible%20with%20an%20Ordinary%20Filesystem>`__ in ``aufs`` (the copy-on-write file system used by Docker).
   This is represented in exported archives by creating a zero-length, read-only file called ``.wh.[NAME]``.
-  For example when exporting a layer where one removed ``/tmp/foo``, the corresponding archive would contain the file ``tmp/.wh.foo``::
+  For example when exporting a layer where one removed ``/tmp/foo``, the corresponding archive would contain the file ``tmp/.wh.foo``:
 
-    % tar tpvf .../layer.tar tmp/foo
-    tar: tmp/foo: Not found in archive
-    tar: Error exit delayed from previous errors.
-    % tar tpvf .../layer.tar tmp/.wh.foo
-    -r--r--r--  0 0      0           0 May 11 15:59 tmp/.wh.foo
+  .. code-block:: sh
+
+     % tar tpvf .../layer.tar tmp/foo
+     tar: tmp/foo: Not found in archive
+     tar: Error exit delayed from previous errors.
+     % tar tpvf .../layer.tar tmp/.wh.foo
+     -r--r--r--  0 0      0           0 May 11 15:59 tmp/.wh.foo
 
   It is assumed that there are no legitimate files on the layered file system with names that start with "``.wh.``" (what ``aufs`` refers to as a "whiteout marker" or simply a "whiteout").
   Where entire subtrees are deleted, only one ``.wh.[NAME]`` entry is created for the top-most directory.
@@ -159,10 +173,6 @@ Limitations
 
 .. |docker.Client.get_image| replace:: ``docker.Client.get_image()``
 .. _`docker.Client.get_image`: https://docker-py.readthedocs.org/en/latest/api/#get_image
-
-* Unit test coverage is minimal.
-
-..
 
 * No thought has been given to i18n.
 

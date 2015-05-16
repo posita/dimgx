@@ -75,6 +75,12 @@ _SETUP_ARGS = {
     'include_package_data': True,
     'install_requires'    : INSTALL_REQUIRES,
     'test_suite'          : 'tests',
+
+    'entry_points'        : {
+        'console_scripts' : [
+            'dimgx = _dimgx.cmd:main',
+        ],
+    },
 }
 
 if __name__ == '__main__':

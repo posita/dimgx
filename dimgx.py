@@ -73,10 +73,7 @@ from future.builtins.disabled import * # pylint: disable=redefined-builtin,unuse
 
 from copy import deepcopy
 from datetime import datetime
-from io import (
-    BytesIO,
-    open,
-)
+from io import open
 from logging import (
     ERROR,
     getLogger,
@@ -320,7 +317,7 @@ def inspectlayers(dc, image_spec):
             images_dict[repo_tag] = image
 
     if image_spec not in images_dict:
-        raise Exception() # TODO
+        raise RuntimeError('{} not found among the layers retreieved for that image'.format(image_spec))
 
     layers = []
     layer = images_dict[image_spec]

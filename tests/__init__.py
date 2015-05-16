@@ -23,19 +23,59 @@ from __future__ import (
 
 from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
+# pylint: disable=missing-super-argument
 
 #---- Imports ------------------------------------------------------------
 
+from hashlib import sha256
+from io import BytesIO
+from os import environ
 from logging import (
     CRITICAL,
     basicConfig as logging_basicConfig,
+    getLevelName as logging_getLevelName,
     getLogger,
 )
 from _dimgx.cmd import _DEFAULT_LOG_FMT
+
+#---- Constants ----------------------------------------------------------
+
+__all__ = (
+    'HashedBytesIo',
+)
+
+_LOG_LEVEL = environ.get('PY_LOG_LVL')
+_LOG_LEVEL = CRITICAL + 1 if not _LOG_LEVEL else logging_getLevelName(_LOG_LEVEL)
+
+#---- Classes ------------------------------------------------------------
+
+#=========================================================================
+class HashedBytesIo(BytesIO):
+
+    #---- Constructor ----------------------------------------------------
+
+    #=====================================================================
+    def __init__(self, initial_bytes=None, hashimpl=sha256):
+        super().__init__(initial_bytes)
+        self._hash_obj = hashimpl()
+
+    #---- Public properties ----------------------------------------------
+
+    #=====================================================================
+    @property
+    def hash_obj(self):
+        return self._hash_obj
+
+    #---- Public hook methods --------------------------------------------
+
+    #=====================================================================
+    def write(self, b):
+        super().write(b)
+        self._hash_obj.update(b)
 
 #---- Initialization -----------------------------------------------------
 
 # Suppress dimgx logging messages during testing
 logging_basicConfig(format=_DEFAULT_LOG_FMT)
-getLogger('dimgx').setLevel(CRITICAL + 1)
-getLogger('_dimgx').setLevel(CRITICAL + 1)
+getLogger('dimgx').setLevel(_LOG_LEVEL)
+getLogger('_dimgx').setLevel(_LOG_LEVEL)

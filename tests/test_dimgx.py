@@ -29,17 +29,24 @@ from future.builtins.disabled import * # pylint: disable=redefined-builtin,unuse
 
 from copy import deepcopy
 from datetime import datetime
+from tarfile import TarFile
 from unittest import TestCase
-from docker.errors import (
-    APIError,
-    DockerException,
-)
+from docker.errors import APIError
 from _dimgx import TZ_UTC
 from dimgx import (
     denormalizeimage,
+    extractlayers,
+    inspectlayers,
     normalizeimage,
 )
+from tests import HashedBytesIo
 from tests.fauxdockerclient import FauxDockerClient
+
+#---- Constants ----------------------------------------------------------
+
+__all__ = ()
+
+_EMTPY_TAR_SHA256 = '84ff92691f909a05b224e1c56abb4864f01b4f8e3c854e4bb4c7baf1d3f6d652'
 
 #---- Classes ------------------------------------------------------------
 
@@ -53,9 +60,164 @@ class DimgxTestCase(TestCase):
         super().setUp()
         self.longMessage = True
         self.maxDiff = None
+        self._dc = FauxDockerClient()
 
     #=====================================================================
-    def test_fauxclient(self):
+    def test_extractall_path0(self):
+        specs = (
+            ( 'getto:dachoppa', slice(None), _EMTPY_TAR_SHA256, -1 ),
+            ( 'getto:dachoppa', slice(None, None, -1), _EMTPY_TAR_SHA256, 0 ),
+        )
+
+        self._check_specs(specs)
+
+    #=====================================================================
+    def test_extractall_path1(self):
+        specs = (
+            ( 'greatest:hits', slice(None), '2b4042d4244b34da51f3a9b761e20f717809c8d68cf53e9c03b2a2e41dae71ca', -1 ),
+            ( 'greatest:hits', slice(None, None, -1), '896e1e38159e7f408bada39e8c095fcd8a171ea9de7e2b7363b5bff505a93842', 0 ),
+        )
+
+        self._check_specs(specs)
+
+    #=====================================================================
+    def test_extractempty(self):
+        specs = (
+            ( 'getto:dachoppa', ( 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf ), _EMTPY_TAR_SHA256, -1 ),
+            ( 'getto:dachoppa', ( 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf )[::-1], _EMTPY_TAR_SHA256, 0 ),
+            ( 'getto:dachoppa', (), _EMTPY_TAR_SHA256, -1 ),
+            ( 'greatest:hits', ( 0x1, 0x3, 0x5, 0x6, 0x7, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe ), _EMTPY_TAR_SHA256, -1 ),
+            ( 'greatest:hits', ( 0x1, 0x3, 0x5, 0x6, 0x7, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe )[::-1], _EMTPY_TAR_SHA256, 0 ),
+            ( 'greatest:hits', (), _EMTPY_TAR_SHA256, -1 ),
+        )
+
+        self._check_specs(specs)
+
+    #=====================================================================
+    def test_extractcombos_path0(self):
+        specs = (
+            ( 'getto:dachoppa', ( 0x0, ), _EMTPY_TAR_SHA256, 0 ),
+            ( 'getto:dachoppa', ( 0x1, ), _EMTPY_TAR_SHA256, 0 ),
+            ( 'getto:dachoppa', ( 0x2, ), _EMTPY_TAR_SHA256, 0 ),
+            ( 'getto:dachoppa', ( 0x0, 0x1 ), _EMTPY_TAR_SHA256, 1 ),
+            ( 'getto:dachoppa', ( 0x0, 0x2 ), _EMTPY_TAR_SHA256, 1 ),
+            ( 'getto:dachoppa', ( 0x1, 0x0 ), _EMTPY_TAR_SHA256, 0 ),
+            ( 'getto:dachoppa', ( 0x1, 0x2 ), _EMTPY_TAR_SHA256, 1 ),
+            ( 'getto:dachoppa', ( 0x2, 0x0 ), _EMTPY_TAR_SHA256, 0 ),
+            ( 'getto:dachoppa', ( 0x2, 0x1 ), _EMTPY_TAR_SHA256, 0 ),
+            ( 'getto:dachoppa', ( 0x0, 0x1, 0x2 ), _EMTPY_TAR_SHA256, 2 ),
+            ( 'getto:dachoppa', ( 0x0, 0x2, 0x1 ), _EMTPY_TAR_SHA256, 1 ),
+            ( 'getto:dachoppa', ( 0x1, 0x0, 0x2 ), _EMTPY_TAR_SHA256, 2 ),
+            ( 'getto:dachoppa', ( 0x1, 0x2, 0x0 ), _EMTPY_TAR_SHA256, 1 ),
+            ( 'getto:dachoppa', ( 0x2, 0x0, 0x1 ), _EMTPY_TAR_SHA256, 0 ),
+            ( 'getto:dachoppa', ( 0x2, 0x1, 0x0 ), _EMTPY_TAR_SHA256, 0 ),
+        )
+
+        self._check_specs(specs)
+
+        # foo = {}
+        #
+        # for image_id, indexes, hexdigest, top_most_layer in specs:
+        #     hash_tar = self._get_hash_tar(image_id, indexes, top_most_layer)
+        #     actual_hexdigest = hash_tar.hash_obj.hexdigest()
+        #
+        #     with open('/Users/matt/Desktop/tars/{}.tar'.format(actual_hexdigest), 'wb') as out_file:
+        #         try:
+        #             foo_list = foo[actual_hexdigest]
+        #         except KeyError:
+        #             foo_list = foo[actual_hexdigest] = []
+        #
+        #         foo_list.append(indexes)
+        #         out_file.write(hash_tar.getvalue())
+        #
+        # for f in foo:
+        #     print('{} -> {}'.format(f, foo[f]))
+
+    #=====================================================================
+    def test_extractcombos_path1(self):
+        specs = (
+            ( 'greatest:hits', ( 0x0, ), '0591d5a0e036416347fb488aa8306e763faa6b914bce257ed9cb6aaa9d42a3ff', 0 ),
+            ( 'greatest:hits', ( 0x2, ), '0614535361515191a68e012e02e62535977222ac5cc7804180a10d11356b00b8', 0 ),
+            ( 'greatest:hits', ( 0x4, ), 'd0be37a7140825eeb7d18d8074bfba677976803af19926e8f922043971e98041', 0 ),
+            ( 'greatest:hits', ( 0xf, ), 'da7eff6919c889afbc4f3e3894556dcae52dbc5e36c20a54743b0027e0422a52', 0 ),
+            ( 'greatest:hits', ( 0x0, 0x2 ), '55dd2704dfb4ba7f9e6735f6c82277da8a2255b9124c287454301f94be3d5d64', 1 ),
+            ( 'greatest:hits', ( 0x0, 0x4 ), '0a80831b9aa9a123065ddd8a33a69ffe75bcba99c3b109fb10c7f81bf8670de4', 1 ),
+            ( 'greatest:hits', ( 0x0, 0xf ), 'b355fac743bd0f412e268fc205a0c103dae1e9021372e3c58be7aaf9ac3ea692', 1 ),
+            ( 'greatest:hits', ( 0x2, 0x0 ), '0591d5a0e036416347fb488aa8306e763faa6b914bce257ed9cb6aaa9d42a3ff', 0 ),
+            ( 'greatest:hits', ( 0x2, 0x4 ), 'd0be37a7140825eeb7d18d8074bfba677976803af19926e8f922043971e98041', 1 ),
+            ( 'greatest:hits', ( 0x2, 0xf ), 'da7eff6919c889afbc4f3e3894556dcae52dbc5e36c20a54743b0027e0422a52', 1 ),
+            ( 'greatest:hits', ( 0x4, 0x0 ), '590469262fef5872b6b9b81a80ec83f4e482cc7c26005e7837029cdea5187d7e', 0 ),
+            ( 'greatest:hits', ( 0x4, 0x2 ), '8e8a38b8e2026892f2671aa745723ac4f36d427106fb92b275f22af4d0419288', 0 ),
+            ( 'greatest:hits', ( 0x4, 0xf ), 'da7eff6919c889afbc4f3e3894556dcae52dbc5e36c20a54743b0027e0422a52', 1 ),
+            ( 'greatest:hits', ( 0xf, 0x0 ), '5ec6a9055436b3bdd916198c063a8ba4df9ed1e22ef997f0db3750418c501184', 0 ),
+            ( 'greatest:hits', ( 0xf, 0x2 ), 'a57177b137895fa39a6b0f6f888866baf7892b9028e46b7194c4be3870c65c1c', 0 ),
+            ( 'greatest:hits', ( 0xf, 0x4 ), '6ecc356781844c21fd55b6f1b5ecb3029268b6e725a0bdc7ef2ff507295c7678', 0 ),
+            ( 'greatest:hits', ( 0x0, 0x2, 0x4 ), 'b04706534b989cfdbd64549bd9e0497f662ceda222f9fbb019bd96eaa2089156', 2 ),
+            ( 'greatest:hits', ( 0x0, 0x2, 0xf ), '2b4042d4244b34da51f3a9b761e20f717809c8d68cf53e9c03b2a2e41dae71ca', 2 ),
+            ( 'greatest:hits', ( 0x0, 0x4, 0x2 ), '93e0bc9543178b5845437768c24d542671f5f182cc00f0d91e19d0b7340e3b7c', 1 ),
+            ( 'greatest:hits', ( 0x0, 0x4, 0xf ), 'b355fac743bd0f412e268fc205a0c103dae1e9021372e3c58be7aaf9ac3ea692', 2 ),
+            ( 'greatest:hits', ( 0x0, 0xf, 0x2 ), '545481e062ff37ba07e0b1d2f66225d1e0ddb664b0370288e8ba84705ae8f7a6', 1 ),
+            ( 'greatest:hits', ( 0x0, 0xf, 0x4 ), '1c7a59ea0776d3903210588d5204f8f39deb7e73784318aba0a4ba9be2bf873d', 1 ),
+            ( 'greatest:hits', ( 0x2, 0x0, 0x4 ), '0a80831b9aa9a123065ddd8a33a69ffe75bcba99c3b109fb10c7f81bf8670de4', 2 ),
+            ( 'greatest:hits', ( 0x2, 0x0, 0xf ), 'b355fac743bd0f412e268fc205a0c103dae1e9021372e3c58be7aaf9ac3ea692', 2 ),
+            ( 'greatest:hits', ( 0x2, 0x4, 0x0 ), '590469262fef5872b6b9b81a80ec83f4e482cc7c26005e7837029cdea5187d7e', 1 ),
+            ( 'greatest:hits', ( 0x2, 0x4, 0xf ), 'da7eff6919c889afbc4f3e3894556dcae52dbc5e36c20a54743b0027e0422a52', 2 ),
+            ( 'greatest:hits', ( 0x2, 0xf, 0x0 ), '5ec6a9055436b3bdd916198c063a8ba4df9ed1e22ef997f0db3750418c501184', 1 ),
+            ( 'greatest:hits', ( 0x2, 0xf, 0x4 ), '6ecc356781844c21fd55b6f1b5ecb3029268b6e725a0bdc7ef2ff507295c7678', 1 ),
+            ( 'greatest:hits', ( 0x4, 0x0, 0x2 ), '90fb48afd21ff7894234b0fa705e25fabb4ad1ed4ca5f495f6f21a629f3b06d1', 0 ),
+            ( 'greatest:hits', ( 0x4, 0x0, 0xf ), 'b355fac743bd0f412e268fc205a0c103dae1e9021372e3c58be7aaf9ac3ea692', 2 ),
+            ( 'greatest:hits', ( 0x4, 0x2, 0x0 ), '590469262fef5872b6b9b81a80ec83f4e482cc7c26005e7837029cdea5187d7e', 0 ),
+            ( 'greatest:hits', ( 0x4, 0x2, 0xf ), 'da7eff6919c889afbc4f3e3894556dcae52dbc5e36c20a54743b0027e0422a52', 2 ),
+            ( 'greatest:hits', ( 0x4, 0xf, 0x0 ), '5ec6a9055436b3bdd916198c063a8ba4df9ed1e22ef997f0db3750418c501184', 1 ),
+            ( 'greatest:hits', ( 0x4, 0xf, 0x2 ), 'a57177b137895fa39a6b0f6f888866baf7892b9028e46b7194c4be3870c65c1c', 1 ),
+            ( 'greatest:hits', ( 0xf, 0x0, 0x2 ), '7b3b9dead3ab21ad60a8331eee646704252e7150950f69b934e59fb1f4508bce', 0 ),
+            ( 'greatest:hits', ( 0xf, 0x0, 0x4 ), '8a125ec03923bc5664a340074fb1cc4225c4a12c049cc8107d6d36f55b131507', 0 ),
+            ( 'greatest:hits', ( 0xf, 0x2, 0x0 ), '5ec6a9055436b3bdd916198c063a8ba4df9ed1e22ef997f0db3750418c501184', 0 ),
+            ( 'greatest:hits', ( 0xf, 0x2, 0x4 ), '6ecc356781844c21fd55b6f1b5ecb3029268b6e725a0bdc7ef2ff507295c7678', 0 ),
+            ( 'greatest:hits', ( 0xf, 0x4, 0x0 ), '896e1e38159e7f408bada39e8c095fcd8a171ea9de7e2b7363b5bff505a93842', 0 ),
+            ( 'greatest:hits', ( 0xf, 0x4, 0x2 ), '85653c0007e63dfe1759e0364ac0a0fbac3566240bc1662e14c7bbceb51379c4', 0 ),
+            ( 'greatest:hits', ( 0x0, 0x2, 0x4, 0xf ), '2b4042d4244b34da51f3a9b761e20f717809c8d68cf53e9c03b2a2e41dae71ca', 3 ),
+            ( 'greatest:hits', ( 0x0, 0x2, 0xf, 0x4 ), 'f638ed20cdbec81c66d52d04584a8235845b31803d99b99acf379639f23eb69a', 2 ),
+            ( 'greatest:hits', ( 0x0, 0x4, 0x2, 0xf ), '2b4042d4244b34da51f3a9b761e20f717809c8d68cf53e9c03b2a2e41dae71ca', 3 ),
+            ( 'greatest:hits', ( 0x0, 0x4, 0xf, 0x2 ), '545481e062ff37ba07e0b1d2f66225d1e0ddb664b0370288e8ba84705ae8f7a6', 2 ),
+            ( 'greatest:hits', ( 0x0, 0xf, 0x2, 0x4 ), 'f638ed20cdbec81c66d52d04584a8235845b31803d99b99acf379639f23eb69a', 1 ),
+            ( 'greatest:hits', ( 0x0, 0xf, 0x4, 0x2 ), 'cd5e09e033946e3973d4f0ed852b6d3570207308414d25caba132ac292d2a4fc', 1 ),
+            ( 'greatest:hits', ( 0x2, 0x0, 0x4, 0xf ), 'b355fac743bd0f412e268fc205a0c103dae1e9021372e3c58be7aaf9ac3ea692', 3 ),
+            ( 'greatest:hits', ( 0x2, 0x0, 0xf, 0x4 ), '1c7a59ea0776d3903210588d5204f8f39deb7e73784318aba0a4ba9be2bf873d', 2 ),
+            ( 'greatest:hits', ( 0x2, 0x4, 0x0, 0xf ), 'b355fac743bd0f412e268fc205a0c103dae1e9021372e3c58be7aaf9ac3ea692', 3 ),
+            ( 'greatest:hits', ( 0x2, 0x4, 0xf, 0x0 ), '5ec6a9055436b3bdd916198c063a8ba4df9ed1e22ef997f0db3750418c501184', 2 ),
+            ( 'greatest:hits', ( 0x2, 0xf, 0x0, 0x4 ), '8a125ec03923bc5664a340074fb1cc4225c4a12c049cc8107d6d36f55b131507', 1 ),
+            ( 'greatest:hits', ( 0x2, 0xf, 0x4, 0x0 ), '896e1e38159e7f408bada39e8c095fcd8a171ea9de7e2b7363b5bff505a93842', 1 ),
+            ( 'greatest:hits', ( 0x4, 0x0, 0x2, 0xf ), '2b4042d4244b34da51f3a9b761e20f717809c8d68cf53e9c03b2a2e41dae71ca', 3 ),
+            ( 'greatest:hits', ( 0x4, 0x0, 0xf, 0x2 ), '545481e062ff37ba07e0b1d2f66225d1e0ddb664b0370288e8ba84705ae8f7a6', 2 ),
+            ( 'greatest:hits', ( 0x4, 0x2, 0x0, 0xf ), 'b355fac743bd0f412e268fc205a0c103dae1e9021372e3c58be7aaf9ac3ea692', 3 ),
+            ( 'greatest:hits', ( 0x4, 0x2, 0xf, 0x0 ), '5ec6a9055436b3bdd916198c063a8ba4df9ed1e22ef997f0db3750418c501184', 2 ),
+            ( 'greatest:hits', ( 0x4, 0xf, 0x0, 0x2 ), '7b3b9dead3ab21ad60a8331eee646704252e7150950f69b934e59fb1f4508bce', 1 ),
+            ( 'greatest:hits', ( 0x4, 0xf, 0x2, 0x0 ), '5ec6a9055436b3bdd916198c063a8ba4df9ed1e22ef997f0db3750418c501184', 1 ),
+            ( 'greatest:hits', ( 0xf, 0x0, 0x2, 0x4 ), '2be5f33da3bc8e20dad2d145dd299413f259e3b7b57eef5e712d87aedaa351b8', 0 ),
+            ( 'greatest:hits', ( 0xf, 0x0, 0x4, 0x2 ), '4ee28e3b555460263a8d33f952dacf49d5cb9a0d8e387e1fe9d621fe621a2f4e', 0 ),
+            ( 'greatest:hits', ( 0xf, 0x2, 0x0, 0x4 ), '8a125ec03923bc5664a340074fb1cc4225c4a12c049cc8107d6d36f55b131507', 0 ),
+            ( 'greatest:hits', ( 0xf, 0x2, 0x4, 0x0 ), '896e1e38159e7f408bada39e8c095fcd8a171ea9de7e2b7363b5bff505a93842', 0 ),
+            ( 'greatest:hits', ( 0xf, 0x4, 0x0, 0x2 ), '66686153e86459d84092603ce70401d9f7413c4bf4399cd10bf2203a08bfbf29', 0 ),
+            ( 'greatest:hits', ( 0xf, 0x4, 0x2, 0x0 ), '896e1e38159e7f408bada39e8c095fcd8a171ea9de7e2b7363b5bff505a93842', 0 ),
+        )
+
+        self._check_specs(specs)
+
+    #=====================================================================
+    def test_fauxclientsanity(self):
+        self.assertEqual(self._dc.images('<does not exist>', all=True), [])
+
+        with self.assertRaises(APIError) as cm:
+            self._dc.get_image('<does not exist>')
+
+        self.assertEqual(cm.exception.args[0].args[0], '404 Client Error: Not Found')
+
+        with self.assertRaises(APIError) as cm:
+            self._dc.get_image('')
+
+        self.assertEqual(cm.exception.args[0].args[0], '500 Server Error')
+
         exc = ZeroDivisionError
         dc = FauxDockerClient(exc)
         self.assertRaises(exc, dc.get_image, None)
@@ -69,33 +231,25 @@ class DimgxTestCase(TestCase):
                 'Parent': 'FEDCBA98765432100123456789abcdeffedcba98765432100123456789ABCDEF',
                 'RepoTags': [ '<none>:<none>' ],
                 'Size': 0,
+                'VirtualSize': 0,
             } , {
                 'Created': 1431216000,
                 'Id': 'fedcba9876543210FEDCBA98765432100123456789abcdef0123456789ABCDEF',
                 'ParentId': '0123456789abcdef0123456789ABCDEFfedcba9876543210FEDCBA9876543210',
                 'RepoTags': [ 'foo:bar', 'baz:latest' ],
                 'Size': 0,
+                'VirtualSize': 0,
             }
         ]
 
         normalized_images = [
             {
-                'Created': '2015-05-01T12:34:56.789012345Z',
-                'Id': '0123456789ABCDEFfedcba98765432100123456789abcdefFEDCBA9876543210',
-                'Parent': 'FEDCBA98765432100123456789abcdeffedcba98765432100123456789ABCDEF',
-                'RepoTags': [ '<none>:<none>' ],
-                'Size': 0,
                 ':created_dt': datetime(2015, 5, 1, 12, 34, 56, 789012, TZ_UTC),
                 ':id': '0123456789abcdeffedcba98765432100123456789abcdeffedcba9876543210',
                 ':parent_id': 'fedcba98765432100123456789abcdeffedcba98765432100123456789abcdef',
                 ':short_id': '0123456789ab',
                 ':repo_tags': [],
             }, {
-                'Created': 1431216000,
-                'Id': 'fedcba9876543210FEDCBA98765432100123456789abcdef0123456789ABCDEF',
-                'ParentId': '0123456789abcdef0123456789ABCDEFfedcba9876543210FEDCBA9876543210',
-                'Size': 0,
-                'RepoTags': [ 'foo:bar', 'baz:latest' ],
                 ':created_dt': datetime(2015, 5, 10, 0, 0, 0, 0, TZ_UTC),
                 ':id': 'fedcba9876543210fedcba98765432100123456789abcdef0123456789abcdef',
                 ':parent_id': '0123456789abcdef0123456789abcdeffedcba9876543210fedcba9876543210',
@@ -105,6 +259,7 @@ class DimgxTestCase(TestCase):
         ]
 
         for i, ni in zip(images, normalized_images):
+            ni.update(i)
             normalized_image = normalizeimage(i, copy=True)
             self.assertIsNot(normalized_image, i)
 
@@ -119,6 +274,37 @@ class DimgxTestCase(TestCase):
         image = deepcopy(images[0])
         self.assertIs(normalizeimage(image), image)
         self.assertIs(denormalizeimage(image), image)
+
+    #--- Protected methods -----------------------------------------------
+
+    #=====================================================================
+    def _check_specs(self, specs):
+        for image_id, indexes, hexdigest, top_most_layer in specs:
+            hash_tar = self._get_hash_tar(image_id, indexes, top_most_layer)
+            self.assertEqual(hash_tar.hash_obj.hexdigest(), hexdigest)
+
+    #=====================================================================
+    def _get_hash_tar(self, image_id, indexes, top_most_layer):
+        target_file = HashedBytesIo()
+
+        with TarFile(mode='w', fileobj=target_file) as tar_file:
+            layers_dict = inspectlayers(self._dc, image_id)
+
+            if isinstance(indexes, slice):
+                layers = layers_dict[':layers'][indexes]
+            else:
+                if indexes:
+                    self.assertLess(top_most_layer, len(indexes), 'indexes: {}; top_most_layer: {}'.format(indexes, top_most_layer))
+                    self.assertGreaterEqual(top_most_layer, -len(indexes), 'indexes: {}; top_most_layer: {}'.format(indexes, top_most_layer))
+                    self.assertEqual(indexes[top_most_layer], max(indexes), 'indexes: {}'.format(indexes))
+
+                layers = [ layers_dict[':layers'][i] for i in indexes ]
+
+            extractlayers(self._dc, layers, tar_file, top_most_layer)
+
+        target_file.seek(0)
+
+        return target_file
 
 #---- Initialization -----------------------------------------------------
 

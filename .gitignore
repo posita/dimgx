@@ -16,6 +16,7 @@ _trial_temp
 .coverage
 .tox
 .vagrant
+.venv-*
 .virtualenv
 *_flymake.py
 *.egg
@@ -24,6 +25,7 @@ _trial_temp
 build
 dist
 docs/_build
+htmlcov
 
 # Compiled objects
 *.class

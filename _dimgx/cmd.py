@@ -284,8 +284,8 @@ def main():
     logging_basicConfig(format=args.log_format)
     getLogger().setLevel(logging_getLevelName(args.log_level))
     dc = Client(args.docker_host)
-    layers = inspectlayers(dc, args.image)
-    top_most_layer_id, selected_layers = selectlayers(args, layers)
+    layers_dict = inspectlayers(dc, args.image)
+    top_most_layer_id, selected_layers = selectlayers(args, layers_dict)
 
     if not selected_layers:
         _LOGGER.warning('no known layers selected')
