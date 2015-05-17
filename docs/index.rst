@@ -176,42 +176,7 @@ Limitations
 
 * No thought has been given to i18n.
 
-It is unlikely that I will tackle (m)any of these warts, but `PRs are welcome <#submissions>`__.
-
-Submissions
------------
-
-``dimgx`` does what I want, so I'm just maintaining it at this point.
-If you find a bug, or want a feature, please `file an issue <https://github.com/posita/py-dimgx/issues>`__ (if it hasn't already been filed).
-If you're willing and able, consider submitting a pull request (PR) with a fix.
-There are only a few guidelines:
-
-* Try to follow the source conventions as you observe them.
-  (Note: I have purposely avoided aspects of `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, in part because I have adopted conventions developed from my experiences with other languages, but mostly because I'm growing older and more stubborn.)
-
-..
-
-* Provide unit tests where feasible and appropriate.
-
-..
-
-* If you need me, mention me (|@posita|_) in your comment, and describe specifically how I can help.
-
-..
-
-* If you want feedback on a work-in-progress (WIP), create a PR and prefix its title with something like, "``NEED FEEDBACK -``".
-
-..
-
-* If your PR is still in progress, but you aren't blocked on anything, prefix the title with something like, "``WIP -``".
-
-..
-
-* Once you're ready for a merge, resolve any merge conflicts, squash your commits, and provide a useful commit message. [#submissions]_
-  Then prefix the PR's title to something like, "``READY FOR MERGE -``".
-  I'll try to get to it as soon as I can.
-
-.. [#submissions] `This <https://robots.thoughtbot.com/git-interactive-rebase-squash-amend-rewriting-history>`__ and `this <http://gitready.com/advanced/2009/02/10/squashing-commits-with-rebase.html>`__ may be helpful.
+It is unlikely that I will tackle (m)any of these warts, but `PRs are welcome <https://github.com/posita/py-dimgx#submissions>`__.
 
 Motivation
 ----------

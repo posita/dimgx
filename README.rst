@@ -6,8 +6,10 @@
    It looks like crap in a text editor, but it has no effect on rendering, and it allows much more useful diffs.
    Thank you!
 
-``dimgx``
-=========
+.. contents::
+
+Status
+======
 
 .. image:: https://pypip.in/version/dimgx/badge.svg
    :target: https://pypi.python.org/pypi/dimgx/
@@ -29,9 +31,6 @@
    :target: https://pypi.python.org/pypi/dimgx/master
    :alt: Supported Python implementations
 
-Status
-------
-
 .. image:: https://travis-ci.org/posita/py-dimgx.svg?branch=master
    :target: https://travis-ci.org/posita/py-dimgx?branch=master
    :alt: Build Status
@@ -50,8 +49,22 @@ Jeff Knupp (|@jeffknupp|_) `describes how <http://www.jeffknupp.com/blog/2013/08
 .. |@jeffknupp| replace:: **@jeffknupp**
 .. _`@jeffknupp`: https://github.com/jeffknupp
 
+Notice
+======
+
+Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
+
+.. |(c)| unicode:: u+a9
+.. _`Matt Bogosian`: mailto:mtb19@columbia.edu?Subject=dimgx
+.. |@posita| replace:: **@posita**
+.. _`@posita`: https://github.com/posita
+
+Please see the ``LICENSE`` (or ``LICENSE.txt``) file which accompanied this software for rights and restrictions governing its use.
+All rights not expressly waived or licensed are reserved.
+If such a file did not accompany this software, then please contact the author before viewing or using this software in any capacity.
+
 **TL;DR**
----------
+=========
 
 ``dimgx`` extracts and flattens `Docker <https://www.docker.com/whatisdocker/>`_ `image <https://docs.docker.com/terms/image/>`__ `layers <https://docs.docker.com/terms/layer/>`__:
 
@@ -92,16 +105,38 @@ Jeff Knupp (|@jeffknupp|_) `describes how <http://www.jeffknupp.com/blog/2013/08
 It is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_.
 See `the docs <https://dimgx.readthedocs.org/en/master/>`__ for more information.
 
-Notice
-------
+Submissions
+===========
 
-Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
+``dimgx`` does what I want, so I'm just maintaining it at this point.
+If you find a bug, or want a feature, please `file an issue <https://github.com/posita/py-dimgx/issues>`__ (if it hasn't already been filed).
+If you're willing and able, consider submitting a pull request (PR) with a fix.
+There are only a few guidelines:
 
-.. |(c)| unicode:: u+a9
-.. _`Matt Bogosian`: mailto:mtb19@columbia.edu?Subject=dimgx
-.. |@posita| replace:: **@posita**
-.. _`@posita`: https://github.com/posita
+* Try to follow the source conventions as you observe them.
+  (Note: I have purposely avoided aspects of `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, in part because I have adopted conventions developed from my experiences with other languages, but mostly because I'm growing older and more stubborn.)
 
-Please see the ``LICENSE`` (or ``LICENSE.txt``) file which accompanied this software for rights and restrictions governing its use.
-All rights not expressly waived or licensed are reserved.
-If such a file did not accompany this software, then please contact the author before viewing or using this software in any capacity.
+..
+
+* Provide unit tests where feasible and appropriate.
+  Tests can be run with ``./runtests.sh`` (requires `tox <https://tox.readthedocs.org/en/latest/>`__) or ``python setup.py test``.
+
+..
+
+* If you need me, mention me (|@posita|_) in your comment, and describe specifically how I can help.
+
+..
+
+* If you want feedback on a work-in-progress (WIP), create a PR and prefix its title with something like, "``NEED FEEDBACK -``".
+
+..
+
+* If your PR is still in progress, but you aren't blocked on anything, prefix the title with something like, "``WIP -``".
+
+..
+
+* Once you're ready for a merge, resolve any merge conflicts, squash your commits, and provide a useful commit message. [#submissions]_
+  Then prefix the PR's title to something like, "``READY FOR MERGE -``".
+  I'll try to get to it as soon as I can.
+
+.. [#submissions] `This <https://robots.thoughtbot.com/git-interactive-rebase-squash-amend-rewriting-history>`__ and `this <http://gitready.com/advanced/2009/02/10/squashing-commits-with-rebase.html>`__ may be helpful.
