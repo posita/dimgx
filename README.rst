@@ -16,31 +16,31 @@ Status
    :alt: Latest Version
 
 .. image:: https://pypip.in/status/dimgx/badge.svg
-   :target: https://pypi.python.org/pypi/dimgx/master
+   :target: https://pypi.python.org/pypi/dimgx/0.1.4
    :alt: Development Status
 
 .. image:: https://pypip.in/license/dimgx/badge.svg
-   :target: https://pypi.python.org/pypi/dimgx/master
+   :target: https://pypi.python.org/pypi/dimgx/0.1.4
    :alt: License
 
 .. image:: https://pypip.in/py_versions/dimgx/badge.svg
-   :target: https://pypi.python.org/pypi/dimgx/master
+   :target: https://pypi.python.org/pypi/dimgx/0.1.4
    :alt: Supported Python versions
 
 .. image:: https://pypip.in/implementation/dimgx/badge.svg
-   :target: https://pypi.python.org/pypi/dimgx/master
+   :target: https://pypi.python.org/pypi/dimgx/0.1.4
    :alt: Supported Python implementations
 
-.. image:: https://travis-ci.org/posita/py-dimgx.svg?branch=master
-   :target: https://travis-ci.org/posita/py-dimgx?branch=master
+.. image:: https://travis-ci.org/posita/py-dimgx.svg?branch=v0.1.4
+   :target: https://travis-ci.org/posita/py-dimgx?branch=v0.1.4
    :alt: Build Status
 
-.. image:: https://coveralls.io/repos/posita/py-dimgx/badge.svg?branch=master
-   :target: https://coveralls.io/r/posita/py-dimgx?branch=master
+.. image:: https://coveralls.io/repos/posita/py-dimgx/badge.svg?branch=v0.1.4
+   :target: https://coveralls.io/r/posita/py-dimgx?branch=v0.1.4
    :alt: Coverage Status
 
-.. image:: https://readthedocs.org/projects/dimgx/badge/?version=master
-   :target: https://dimgx.readthedocs.org/en/master/
+.. image:: https://readthedocs.org/projects/dimgx/badge/?version=v0.1.4
+   :target: https://dimgx.readthedocs.org/en/v0.1.4/
    :alt: Documentation Status
 
 Curious about integrating your project with the above services?
@@ -103,7 +103,7 @@ If such a file did not accompany this software, then please contact the author b
    9.0M    nifty.tar
 
 It is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_.
-See `the docs <https://dimgx.readthedocs.org/en/master/>`__ for more information.
+See `the docs <https://dimgx.readthedocs.org/en/v0.1.4/>`__ for more information.
 
 Submissions
 ===========

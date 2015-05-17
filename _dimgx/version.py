@@ -25,4 +25,4 @@ from __future__ import (
 
 __all__ = ()
 
-__version__ = 'master'
+__version__ = '0.1.4'
