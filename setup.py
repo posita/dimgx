@@ -62,20 +62,21 @@ _MY_DIR = dirname(getframeinfo(currentframe()).filename)
 #---- Initialization -----------------------------------------------------
 
 _namespace = {
-    '__version__': '<none>',
     '_version_path': ospath_join(_MY_DIR, '_dimgx', 'version.py'),
 }
 
 if isfile(_namespace['_version_path']):
     exec(compile(open(_namespace['_version_path']).read(), _namespace['_version_path'], 'exec'), _namespace, _namespace) # pylint: disable=exec-used
 
+__version__ = _namespace.get('__version__')
+__release__ = _namespace.get('__release__', __version__)
+
 _SETUP_ARGS = {
     'name'                : 'dimgx',
-    'version'             : _namespace['__version__'],
+    'version'             : __version__,
     'author'              : 'Matt Bogosian',
     'author_email'        : 'mtb19@columbia.edu',
-    'url'                 : 'https://github.com/posita/py-dimgx',
-    'bugtrack_url'        : 'https://github.com/posita/py-dimgx/issues',
+    'url'                 : 'https://dimgx.readthedocs.org/en/{}/'.format(__release__),
     'license'             : 'MIT License',
     'description'         : 'extract and flatten Docker image layers',
     'long_description'    : open(ospath_join(_MY_DIR, 'README.rst')).read(),

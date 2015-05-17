@@ -44,7 +44,7 @@ __all__ = (
     'HashedBytesIo',
 )
 
-_LOG_LEVEL = environ.get('PY_LOG_LVL')
+_LOG_LEVEL = environ.get('_DIMGX_LOG_LVL')
 _LOG_LEVEL = CRITICAL + 1 if not _LOG_LEVEL else logging_getLevelName(_LOG_LEVEL)
 
 #---- Classes ------------------------------------------------------------
