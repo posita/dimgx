@@ -75,6 +75,7 @@ _SETUP_ARGS = {
     'author'              : 'Matt Bogosian',
     'author_email'        : 'mtb19@columbia.edu',
     'url'                 : 'https://github.com/posita/py-dimgx',
+    'bugtrack_url'        : 'https://github.com/posita/py-dimgx/issues',
     'license'             : 'MIT License',
     'description'         : 'extract and flatten Docker image layers',
     'long_description'    : open(ospath_join(_MY_DIR, 'README.rst')).read(),
@@ -87,6 +88,7 @@ _SETUP_ARGS = {
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
+        'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
@@ -101,10 +103,10 @@ _SETUP_ARGS = {
     'install_requires'    : INSTALL_REQUIRES,
     'test_suite'          : 'tests',
 
-    'entry_points'        : {
-        'console_scripts' : [
+    'entry_points': {
+        'console_scripts': (
             'dimgx = _dimgx.cmd:main',
-        ],
+        ),
     },
 }
 
