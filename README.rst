@@ -6,6 +6,22 @@
    It looks like crap in a text editor, but it has no effect on rendering, and it allows much more useful diffs.
    Thank you!
 
+Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
+
+.. |(c)| unicode:: u+a9
+.. _`Matt Bogosian`: mailto:mtb19@columbia.edu?Subject=dimgx
+.. |@posita| replace:: **@posita**
+.. _`@posita`: https://github.com/posita
+
+Please see the accompanying |LICENSE|_ (or |LICENSE.txt|_) file for rights and restrictions governing use of this software.
+All rights not expressly waived or licensed are reserved.
+If such a file did not accompany this software, then please contact the author before viewing or using this software in any capacity.
+
+.. |LICENSE| replace:: ``LICENSE``
+.. _`LICENSE`: LICENSE
+.. |LICENSE.txt| replace:: ``LICENSE.txt``
+.. _`LICENSE.txt`: LICENSE
+
 ``dimgx``
 =========
 
@@ -13,21 +29,25 @@
    :target: https://pypi.python.org/pypi/dimgx/
    :alt: Latest Version
 
-.. image:: https://pypip.in/status/dimgx/badge.svg
-   :target: https://pypi.python.org/pypi/dimgx/master
-   :alt: Development Status
+.. image:: https://readthedocs.org/projects/dimgx/badge/?version=master
+   :target: https://dimgx.readthedocs.org/en/master/
+   :alt: Documentation
 
 .. image:: https://pypip.in/license/dimgx/badge.svg
-   :target: https://pypi.python.org/pypi/dimgx/master
+   :target: http://opensource.org/licenses/MIT
    :alt: License
 
 .. image:: https://pypip.in/py_versions/dimgx/badge.svg
    :target: https://pypi.python.org/pypi/dimgx/master
-   :alt: Supported Python versions
+   :alt: Supported Python Versions
 
 .. image:: https://pypip.in/implementation/dimgx/badge.svg
    :target: https://pypi.python.org/pypi/dimgx/master
-   :alt: Supported Python implementations
+   :alt: Supported Python Implementations
+
+.. image:: https://pypip.in/status/dimgx/badge.svg
+   :target: https://pypi.python.org/pypi/dimgx/master
+   :alt: Development Stage
 
 Status
 ------
@@ -40,29 +60,11 @@ Status
    :target: https://coveralls.io/r/posita/py-dimgx?branch=master
    :alt: Coverage Status
 
-.. image:: https://readthedocs.org/projects/dimgx/badge/?version=master
-   :target: https://dimgx.readthedocs.org/en/master/
-   :alt: Documentation Status
-
 Curious about integrating your project with the above services?
 Jeff Knupp (|@jeffknupp|_) `describes how <http://www.jeffknupp.com/blog/2013/08/16/open-sourcing-a-python-project-the-right-way/>`__.
 
 .. |@jeffknupp| replace:: **@jeffknupp**
 .. _`@jeffknupp`: https://github.com/jeffknupp
-
-Notice
-------
-
-Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
-
-.. |(c)| unicode:: u+a9
-.. _`Matt Bogosian`: mailto:mtb19@columbia.edu?Subject=dimgx
-.. |@posita| replace:: **@posita**
-.. _`@posita`: https://github.com/posita
-
-Please see the ``LICENSE`` (or ``LICENSE.txt``) file which accompanied this software for rights and restrictions governing its use.
-All rights not expressly waived or licensed are reserved.
-If such a file did not accompany this software, then please contact the author before viewing or using this software in any capacity.
 
 **TL;DR**
 ---------
@@ -113,45 +115,9 @@ If such a file did not accompany this software, then please contact the author b
 Source code is `available on GitHub <https://github.com/posita/py-dimgx>`__.
 See `the docs <https://dimgx.readthedocs.org/en/master/>`__ for more information.
 
-Submissions
-===========
+Issues
+------
 
 ``dimgx`` does what I want, so I'm just maintaining it at this point.
 If you find a bug, or want a feature, please `file an issue <https://github.com/posita/py-dimgx/issues>`__ (if it hasn't already been filed).
-If you're willing and able, consider submitting a pull request (PR) with a fix.
-There are only a few guidelines:
-
-* If it isn't already there, please add your name (and optionally your GitHub username or email or website address) to the ``CREDITS`` file::
-
-    ...
-    * Gordon the Turtle <https://github.com/GordonTheTurtle>
-    ...
-
-* Try to follow the source conventions as you observe them.
-  (Note: I have purposely avoided aspects of `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, in part because I have adopted conventions developed from my experiences with other languages, but mostly because I'm growing older and more stubborn.)
-
-..
-
-* Provide unit tests where feasible and appropriate.
-  At the very least, existing tests should not fail.
-  (There are exceptions, but if there is any doubt, they probably don't apply.)
-  Tests can be run with ``./runtests.sh`` (requires `tox <https://tox.readthedocs.org/en/latest/>`__) or ``python setup.py test``.
-
-..
-
-* If you need me, mention me (|@posita|_) in your comment, and describe specifically how I can help.
-
-..
-
-* If you want feedback on a work-in-progress (WIP), create a PR and prefix its title with something like, "``NEED FEEDBACK -``".
-
-..
-
-* If your PR is still in progress, but you aren't blocked on anything, prefix the title with something like, "``WIP -``".
-
-..
-
-* Once you're ready for a merge, resolve any merge conflicts, squash your commits, and provide a useful commit message.
-  (`This <https://robots.thoughtbot.com/git-interactive-rebase-squash-amend-rewriting-history>`__ and `this <http://gitready.com/advanced/2009/02/10/squashing-commits-with-rebase.html>`__ may be helpful.)
-  Then prefix the PR's title to something like, "``READY FOR MERGE -``".
-  I'll try to get to it as soon as I can.
+If you're willing and able, consider `contributing <https://dimgx.readthedocs.org/en/master/submissions.html>`__.

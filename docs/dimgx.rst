@@ -11,6 +11,7 @@
    :hidden:
 
    index
+   submissions
 
 .. automodule:: dimgx
    :members:
