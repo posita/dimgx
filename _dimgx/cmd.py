@@ -304,7 +304,7 @@ def printlayerinfo(args, layers, outfile=stdout):
         return
 
     total_size = 0
-    fields_fmt = '\t'.join([ '{:<19}' ] + [ '{:<15}' ] * 5)
+    fields_fmt = '\t'.join([ '{:<23}' ] + [ '{:<15}' ] * 5)
     print(fields_fmt.format('IMAGE TAG', 'IMAGE ID', 'PARENT ID', 'CREATED', 'LAYER SIZE', 'VIRTUAL SIZE'), file=outfile)
 
     for l in layers:
