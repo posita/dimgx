@@ -299,16 +299,21 @@ def main():
 def printlayerinfo(args, layers, outfile=stdout):
     if args.quiet:
         for l in layers:
-            print(l['Id'][:12].lower(), file=outfile)
+            print(l[':short_id'], file=outfile)
 
         return
 
     total_size = 0
-    fields_fmt = '\t'.join([ '{:<15}' ] * 5)
-    print(fields_fmt.format('IMAGE ID', 'PARENT ID', 'CREATED', 'LAYER SIZE', 'VIRTUAL SIZE'), file=outfile)
+    fields_fmt = '\t'.join([ '{:<19}' ] + [ '{:<15}' ] * 5)
+    print(fields_fmt.format('IMAGE TAG', 'IMAGE ID', 'PARENT ID', 'CREATED', 'LAYER SIZE', 'VIRTUAL SIZE'), file=outfile)
 
     for l in layers:
-        image_id = l['Id'][:12].lower()
+        try:
+            image_tag = l[':repo_tags'][0]
+        except IndexError:
+            image_tag = '-'
+
+        image_id = l[':short_id']
         parent_id = l[':parent_id'][:12].lower()
 
         if not parent_id:
@@ -318,7 +323,7 @@ def printlayerinfo(args, layers, outfile=stdout):
         layer_size = naturalsize(l['Size'])
         total_size += l['Size']
         virt_size = naturalsize(total_size)
-        print(fields_fmt.format(image_id, parent_id, created, layer_size, virt_size), file=outfile)
+        print(fields_fmt.format(image_tag, image_id, parent_id, created, layer_size, virt_size), file=outfile)
 
 #=========================================================================
 def selectlayers(args, layers):

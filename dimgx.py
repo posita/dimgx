@@ -408,14 +408,18 @@ def normalizeimage(image_desc, copy=False):
     else:
         image[':created_dt'] = dateutil_parse(image_created)
 
-    repo_tags = image.get('RepoTags', ())
-    image[':repo_tags'] = [ t for t in repo_tags if t != '<none>:<none>' ]
+    image[':repo_tags'] = []
 
-    for repo_tag in repo_tags:
+    for repo_tag in image.get('RepoTags', ()):
+        if repo_tag == '<none>:<none>':
+            continue
+
         repo, tag = repo_tag.split(':')
 
         if tag == 'latest':
             image[':repo_tags'].append(repo)
+
+        image[':repo_tags'].append(repo_tag)
 
     return image
 

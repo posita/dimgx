@@ -84,24 +84,24 @@ Jeff Knupp (|@jeffknupp|_) `describes how <http://www.jeffknupp.com/blog/2013/08
 ::
 
   % dimgx nifty-box # show layers for "nifty-box[:latest]"
-  IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
-  3cb35ae859e7    -               16 days ago     125.1 MB        125.1 MB
-  41b730702607    3cb35ae859e7    16 days ago     0 Bytes         125.1 MB
-  60aa72e3db11    41b730702607    7 days ago      0 Bytes         125.1 MB
-  390ac3ff1e87    60aa72e3db11    6 days ago      1.7 kB          125.1 MB
-  fec4e64b2b57    390ac3ff1e87    6 days ago      9.4 MB          134.5 MB
-  51a39b466ad7    fec4e64b2b57    6 days ago      0 Bytes         134.5 MB
-  0bb92bb75744    51a39b466ad7    4 days ago      1.7 kB          134.5 MB
+  IMAGE TAG               IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
+  -                       3cb35ae859e7    -               16 days ago     125.1 MB        125.1 MB
+  debian:jessie           41b730702607    3cb35ae859e7    16 days ago     0 Bytes         125.1 MB
+  -                       60aa72e3db11    41b730702607    7 days ago      0 Bytes         125.1 MB
+  -                       390ac3ff1e87    60aa72e3db11    6 days ago      1.7 kB          125.1 MB
+  -                       fec4e64b2b57    390ac3ff1e87    6 days ago      9.4 MB          134.5 MB
+  -                       51a39b466ad7    fec4e64b2b57    6 days ago      0 Bytes         134.5 MB
+  nifty-box               0bb92bb75744    51a39b466ad7    4 days ago      1.7 kB          134.5 MB
 
 ..
 
 ::
 
   % dimgx -l 2:4 nifty-box # show only the second through fourth layers
-  IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
-  60aa72e3db11    41b730702607    7 days ago      0 Bytes         0 Bytes
-  390ac3ff1e87    60aa72e3db11    6 days ago      1.7 kB          1.7 kB
-  fec4e64b2b57    390ac3ff1e87    6 days ago      9.4 MB          9.4 MB
+  IMAGE TAG               IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
+  debian:jessie           60aa72e3db11    41b730702607    7 days ago      0 Bytes         0 Bytes
+  -                       390ac3ff1e87    60aa72e3db11    6 days ago      1.7 kB          1.7 kB
+  -                       fec4e64b2b57    390ac3ff1e87    6 days ago      9.4 MB          9.4 MB
 
 ..
 

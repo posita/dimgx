@@ -118,24 +118,24 @@ Omit the target (the ``-t`` option) to display the layer extraction order (and s
 .. code-block:: sh
 
    % dimgx -l 1:2 -l 6:5 -l 3 nifty-box
-   IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
-   41b730702607    3cb35ae859e7    12 days ago     0 Bytes         0 Bytes
-   60aa72e3db11    41b730702607    2 days ago      0 Bytes         0 Bytes
-   0bb92bb75744    51a39b466ad7    34 minutes ago  1.7 kB          1.7 kB
-   51a39b466ad7    fec4e64b2b57    2 days ago      0 Bytes         1.7 kB
-   390ac3ff1e87    60aa72e3db11    2 days ago      1.7 kB          3.4 kB
+   IMAGE TAG               IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
+   debian:jessie           41b730702607    3cb35ae859e7    12 days ago     0 Bytes         0 Bytes
+   -                       60aa72e3db11    41b730702607    2 days ago      0 Bytes         0 Bytes
+   nifty-box               0bb92bb75744    51a39b466ad7    34 minutes ago  1.7 kB          1.7 kB
+   -                       51a39b466ad7    fec4e64b2b57    2 days ago      0 Bytes         1.7 kB
+   -                       390ac3ff1e87    60aa72e3db11    2 days ago      1.7 kB          3.4 kB
 
 Image IDs can be used in lieu of or mixed with indexes:
 
 .. code-block:: sh
 
    % dimgx -l 41b730702607:2 -l 6:51a39b466ad7 -l 390ac3ff1e87 nifty-box
-   IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
-   41b730702607    3cb35ae859e7    12 days ago     0 Bytes         0 Bytes
-   60aa72e3db11    41b730702607    2 days ago      0 Bytes         0 Bytes
-   0bb92bb75744    51a39b466ad7    34 minutes ago  1.7 kB          1.7 kB
-   51a39b466ad7    fec4e64b2b57    2 days ago      0 Bytes         1.7 kB
-   390ac3ff1e87    60aa72e3db11    2 days ago      1.7 kB          3.4 kB
+   IMAGE TAG               IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
+   debian:jessie           41b730702607    3cb35ae859e7    12 days ago     0 Bytes         0 Bytes
+   -                       60aa72e3db11    41b730702607    2 days ago      0 Bytes         0 Bytes
+   nifty-box               0bb92bb75744    51a39b466ad7    34 minutes ago  1.7 kB          1.7 kB
+   -                       51a39b466ad7    fec4e64b2b57    2 days ago      0 Bytes         1.7 kB
+   -                       390ac3ff1e87    60aa72e3db11    2 days ago      1.7 kB          3.4 kB
 
 Limitations
 -----------

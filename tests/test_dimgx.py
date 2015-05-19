@@ -237,7 +237,7 @@ class DimgxTestCase(TestCase):
                 ':id': 'fedcba9876543210fedcba98765432100123456789abcdef0123456789abcdef',
                 ':parent_id': '0123456789abcdef0123456789abcdeffedcba9876543210fedcba9876543210',
                 ':short_id': 'fedcba987654',
-                ':repo_tags': [ 'foo:bar', 'baz:latest', 'baz' ],
+                ':repo_tags': [ 'foo:bar', 'baz', 'baz:latest' ],
             }
         ]
 
