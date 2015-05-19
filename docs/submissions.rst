@@ -10,9 +10,6 @@
    :maxdepth: 3
    :hidden:
 
-   index
-   dimgx
-
 Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
 
 .. |(c)| unicode:: u+a9
@@ -50,7 +47,7 @@ Submission Guidelines
 If you're willing and able, consider `submitting a pull request <https://github.com/posita/py-dimgx/pulls>`__ (PR) with a fix.
 There are only a few guidelines:
 
-* If it isn't already there, please add your name (and optionally your GitHub username or email or website address) to the ``CREDITS`` file::
+* If it isn't already there, please add your name (and optionally your GitHub username, email, website address, or other contact information) to the ``CREDITS`` file::
 
     ...
     * Gordon the Turtle <https://github.com/GordonTheTurtle>

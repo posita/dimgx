@@ -10,9 +10,6 @@
    :maxdepth: 3
    :hidden:
 
-   index
-   submissions
-
 .. automodule:: dimgx
    :members:
    :special-members:
