@@ -66,7 +66,11 @@ _namespace = {
 }
 
 if isfile(_namespace['_version_path']):
-    exec(compile(open(_namespace['_version_path']).read(), _namespace['_version_path'], 'exec'), _namespace, _namespace) # pylint: disable=exec-used
+    with open(_namespace['_version_path']) as _version_file:
+        exec(compile(_version_file.read(), _namespace['_version_path'], 'exec'), _namespace, _namespace) # pylint: disable=exec-used
+
+with open(ospath_join(_MY_DIR, 'README.rst')) as _readme_file:
+    README = _readme_file.read()
 
 __version__ = _namespace.get('__version__')
 __release__ = _namespace.get('__release__', __version__)
@@ -79,7 +83,7 @@ _SETUP_ARGS = {
     'url'                 : 'https://dimgx.readthedocs.org/en/{}/'.format(__release__),
     'license'             : 'MIT License',
     'description'         : 'Docker IMaGe layer eXtractor (and flattener)',
-    'long_description'    : open(ospath_join(_MY_DIR, 'README.rst')).read(),
+    'long_description'    : README,
 
     # From <http://pypi.python.org/pypi?%3Aaction=list_classifiers>
     'classifiers': (

@@ -43,16 +43,16 @@
         IMAGE_ID = '0fe1d2c3b4a5' # short version
         layers_dict = inspectlayers(dc, IMAGE_ID)
         with tarfile.open('output.tar', 'w') as tar_file:
-          extractlayers(dc, layers_dict[':layers'][1:], tar_file)
+          extractlayers(dc, layers_dict[':layers'][:-1], tar_file)
 
   Extract all but the first and last layers *in reverse order* (note the
-  ``0`` provided for the :obj:`top_most_layer` parameter to
+  ``-1`` provided for the :obj:`top_most_layer` parameter to
   :func:`extractlayers`)::
 
       with tarfile.open('output.tar', 'w') as tar_file:
           layers_to_extract = layers_dict[':layers'][1:-1]
           layers_to_extract.reverse()
-          extractlayers(dc, layers_to_extract, tar_file, top_most_layer=0)
+          extractlayers(dc, layers_to_extract, tar_file, top_most_layer=-1)
 
   Module Contents
   ---------------
@@ -77,6 +77,7 @@ from future.builtins.disabled import * # pylint: disable=redefined-builtin,unuse
 
 from copy import deepcopy
 from datetime import datetime
+from functools import cmp_to_key
 from io import open
 from logging import (
     ERROR,
@@ -148,20 +149,20 @@ def denormalizeimage(image_desc, copy=False):
     return image
 
 #=========================================================================
-def extractlayers(dc, layers, tar_file, top_most_layer=-1):
+def extractlayers(dc, layers, tar_file, top_most_layer=0):
     """
     :param dc: a |docker.Client|_
 
     :param layers: a sequence of inspection objects (likely retrieved with
                    :func:`inspectlayers`) corresponding to the layers to
-                   extract and flatten
+                   extract and flatten in order of precedence
 
     :param tar_file: a :class:`~tarfile.TarFile` open for writing to which
                      to write the flattened layer archive
 
     :param top_most_layer: an image ID or an index into :obj:`layers`
                            indicating the most recent layer to retrieve
-                           (the default of ``-1`` references the last item
+                           (the default of ``0`` references the first item
                            in :obj:`layers`; see below)
 
     :raises: :class:`docker.errors.APIError` or
@@ -174,11 +175,11 @@ def extractlayers(dc, layers, tar_file, top_most_layer=-1):
 
     Retrieves the layers corresponding to the :obj:`layers` parameter and
     extracts them into :obj:`tar_file`. Changes from layers corresponding
-    to larger indexes in :obj:`layers` will overwrite or block those from
-    smaller ones.
+    to smaller indexes in :obj:`layers` will overwrite or block those from
+    larger ones.
 
     Callers will need to set the :obj:`top_most_layer` parameter if
-    :obj:`layers` is not in ascending order. It is always safe to provide
+    :obj:`layers` is not in descending order. It is always safe to provide
     the same value as the :obj:`image_spec` parameter to
     :func:`inspectlayers`, but this may be ineffecient if that layer does
     not appear in :obj:`layers`.
@@ -210,8 +211,8 @@ def extractlayers(dc, layers, tar_file, top_most_layer=-1):
         seen = set()
         hides_subtrees = set()
 
-        # Look through each layer's archive (oldest to newest)
-        for layer in layers[::-1]:
+        # Look through each layer's archive (newest to oldest)
+        for layer in layers:
             layer_id = layer[':id']
             layer_tar_path = path_join(tmp_dir, layer_id, 'layer.tar')
 
@@ -273,6 +274,30 @@ def extractlayers(dc, layers, tar_file, top_most_layer=-1):
         rmtree(tmp_dir, ignore_errors=True)
 
 #=========================================================================
+def imagekey(image):
+    """
+    :param image: a normalized image description as returned from
+                  |docker.Client.images|_, |docker.Client.inspect_image|_,
+                  etc., and passed through :func:`dimgx.normalizeimage`
+
+    :returns: an object providing the appropriate `rich comparison
+              functions
+              <https://docs.python.org/howto/sorting.html#odd-and-ends>`__
+              for use (e.g.) as the ``key`` parameter to :func:`sorted`.
+
+    The underlying implementation is a :func:`cmp`-like function that is
+    wrapped with :func:`functools.cmp_to_key`. See `this
+    <https://docs.python.org/howto/sorting.html#the-old-way-using-the-cmp-parameter>`__
+    for details.
+
+    .. |docker.Client.images| replace:: :func:`docker.Client.images`
+    .. _`docker.Client.images`: https://docker-py.readthedocs.org/en/latest/api/#images
+    .. |docker.Client.inspect_image| replace:: :func:`docker.Client.inspect_image`
+    .. _`docker.Client.inspect_image`: https://docker-py.readthedocs.org/en/latest/api/#inspect_image
+    """
+    return _imagekey(image) # pylint: disable=no-value-for-parameter
+
+#=========================================================================
 def inspectlayers(dc, image_spec):
     """
     :param dc: a |docker.Client|_
@@ -291,64 +316,83 @@ def inspectlayers(dc, image_spec):
     The returned :class:`dict` is as follows::
 
         {
-            ':layers': ( image_desc_0, ... image_desc_n ),
-            image_id_0: 0,
-            ...
+            ':layers': ( image_desc_n, ... image_desc_0 ),
             image_id_n: n,
+            ...
+            image_id_0: 0,
             ...
         }
 
-    The :attr:`':layers'` :class:`tuple` is in ascending order (i.e., from
-    the root to :obj:`image_spec`). The other entries map the layers'
+    The :attr:`':layers'` :class:`list` is in desscending order (i.e.,
+    from :obj:`image_spec` to the root). The other entries map the layers'
     various IDs, to their respective indexes in the :attr:`':layers'`
-    :class:`tuple`.
+    :class:`list`.
     """
     images = logexception(_LOGGER, ERROR, 'unable to retrieve image summaries: {{e}}'.format(), dc.images, all=True)
-    images_dict = {}
+    images = sorted(( normalizeimage(i) for i in images ), key=imagekey, reverse=True)
+    image_spec_len = len(image_spec)
+    images_by_id = {}
+    children = {}
+    layer = None
 
     for image in images:
-        normalizeimage(image)
         image_id = image[':id']
-        image_short_id = image[':short_id']
-        images_dict[image_id] = image
-        images_dict[image_short_id] = image
+        image_parent_id = image[':parent_id']
+        images_by_id[image_id] = image
 
-        for repo_tag in image[':repo_tags']:
-            images_dict[repo_tag] = image
+        try:
+            image[':child_ids'] = children[image_id]
+        except KeyError:
+            image[':child_ids'] = []
 
-    if image_spec not in images_dict:
+        try:
+            children[image_parent_id].append(image_id)
+        except KeyError:
+            children[image_parent_id] = [ image_id ]
+
+        if image_spec in image[':repo_tags'] \
+                or image_spec.lower() == image_id[0:image_spec_len]:
+            if layer is not None:
+                raise RuntimeError('{} does not resolve to a single image'.format(image_spec))
+
+            layer = image
+
+    if layer is None:
         raise RuntimeError('{} not found among the layers retreieved for that image'.format(image_spec))
 
     layers = []
-    layer = images_dict[image_spec]
+
+    layers_by_id = {
+        ':all_images': images_by_id,
+        ':layers': layers,
+    }
+
     layer_id = layer[':id']
 
-    if image_spec not in ( layer_id, layer[':short_id'] ):
+    if image_spec.lower() not in ( layer_id, layer[':short_id'] ):
         _LOGGER.debug('image "%s" has ID "%s"', image_spec, layer[':short_id'])
+
+    i = 0
 
     while True:
         layers.append(layer)
-        parent_layer_short_id = layer[':parent_id'][:12]
 
-        if not parent_layer_short_id:
-            _LOGGER.debug('found root layer "%s"', layer[':short_id'])
-            break
-
-        layer_id = parent_layer_short_id
-        layer = images_dict[layer_id]
-
-    layers.reverse()
-    layers_by_id = {
-        ':all_images': images_dict,
-        ':layers': tuple(layers),
-    }
-
-    for i, layer in enumerate(layers):
-        layers_by_id[layer[':id']] = i
-        layers_by_id[layer[':short_id']] = i
+        for j in range(1, len(layer_id) + 1):
+            layer_id_part = layer_id[0:j]
+            layers_by_id[layer_id_part] = None if layer_id_part in layers_by_id else i
 
         for repo_tag in layer[':repo_tags']:
             layers_by_id[repo_tag] = i
+
+        parent_layer_id = layer[':parent_id']
+
+        if not parent_layer_id:
+            _LOGGER.debug('found root layer "%s"', layer[':short_id'])
+            break
+
+        layer = images_by_id[parent_layer_id]
+        layer_id = layer[':id']
+        i += 1
 
     return layers_by_id
 
@@ -416,6 +460,29 @@ def normalizeimage(image_desc, copy=False):
         image[':repo_tags'].append(repo_tag)
 
     return image
+
+#=========================================================================
+@cmp_to_key
+def _imagekey(i, j):
+    created_diff = (i[':created_dt'] - j[':created_dt']).total_seconds()
+
+    # The creation times in image descriptions retrieved from
+    # :func:docker.Client.images do not include fractional seconds, so
+    # there are likely to be clashes; the best we can do without
+    # additional calls is look for a parent/child relationship among
+    # adjacent descriptions with the same creation time, but this breaks
+    # for (e.g.) the following:
+    #
+    # [ ...,
+    #   { 'Created': 1234, 'Id': '5b6a...', 'ParentId', '3d4c...' }, # child
+    #   { 'Created': 1234, 'Id': '0def...', 'ParentId', 'fade...' }, # interloper
+    #   { 'Created': 1234, 'Id': '3d4c...', 'ParentId', '0f2e...' }, # parent
+    #   ... ]
+    #
+    # The solution is to call func:docker.Client.inspect_image where there
+    # is a creation time clash to see if can be resolved with more
+    # granular creation times
+    return created_diff if created_diff else -(j[':parent_id'] == i[':id']) or +(i[':parent_id'] == j[':id'])
 
 #---- Initialization -----------------------------------------------------
 

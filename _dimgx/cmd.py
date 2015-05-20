@@ -86,7 +86,7 @@ from _dimgx import (
 __all__ = ()
 
 _LOGGER = getLogger(__name__)
-_LAYER_RE_STR = r'(?:0|-?[1-9]\d{0,10}|-?0[Bb][01]+|-?0[Oo][0-7]+|-?0[Xx][0-9A-Fa-f]+|[0-9A-Fa-f]{12,64})'
+_LAYER_RE_STR = r'(?:[0-9A-Fa-f]{1,64})'
 _LAYER_SPEC_RE = re_compile(r'^(?P<l>{layer_re})(?::(?P<r>{layer_re}))?$'.format(layer_re=_LAYER_RE_STR), IGNORECASE)
 _TARGET_STDOUT = '-'
 _CMP_BZIP2 = 'bz2'
@@ -113,13 +113,12 @@ Diagnostics: 1 for a problem encountered while parsing the command arguments; {}
 """.format(_EXIT_EXEC, _EXIT_LAYER_SPEC)
 
 _LAYER_GROUP_DESCRIPTION = """
-Layers can be specified as indexes [-n..n) (where "n" is the total number of layers present in the image), or Docker image IDs.
-Negative indexes count from the end (i.e., "-i" is equivalent to "n - i").
+Layers are specified as (partial) Docker image IDs.
 Layers may also be specified as ranges in the form "i:j" (where "i" and "j" are indexes or image IDs).
 The range "j:i" is equivalent to the reverse of the range "i:j".
 Ranges are inclusive, meaning "i:i" is equivalent to "i".
-If no layers are specified, all layers are inferred, starting with the root (i.e., primogenitor), and ending with the specified image (i.e., "0:-1").
-Layers are extracted in order, which means that files from layers specified later in the command line will overwrite (or block) those from earlier ones where there is a conflict.
+If no layers are specified, all layers are inferred, starting with the root (i.e., primogenitor), and ending with IMAGE_SPEC.
+Layers are extracted in order, which means that files from layers specified later in the command line will overwrite (or block) those from earlier specifications where there is a conflict.
 Ordering is resolved before retrieval so that each distinct layer is only extracted once.
 """
 
@@ -233,29 +232,10 @@ def layerspec2index(args, layers, layer_spec_part):
     if layer_spec_part is None:
         return None
 
-    num_layers = len(layers[':layers'])
-
-    if len(layer_spec_part) < 12:
-        try:
-            li = int(layer_spec_part, 0)
-
-            if not args.strict:
-                new_li = min(max(li, -num_layers), num_layers - 1)
-
-                if new_li != li:
-                    li = new_li
-                    _LOGGER.warning('"%s" is out of range (truncating) to "%d")', layer_spec_part, li)
-
-            if li >= -num_layers \
-                    and li < num_layers:
-                return li if li >= 0 else num_layers + li
-        except ValueError:
-            pass
-    else:
-        try:
-            return layers[layer_spec_part]
-        except KeyError:
-            pass
+    try:
+        return layers[layer_spec_part]
+    except KeyError:
+        pass
 
     no_layer_msg = '"%s" does not resolve to any layer associated with image "%s"'
 
@@ -305,25 +285,27 @@ def printlayerinfo(args, layers, outfile=stdout):
 
     total_size = 0
     fields_fmt = '\t'.join([ '{:<23}' ] + [ '{:<15}' ] * 5)
-    print(fields_fmt.format('IMAGE TAG', 'IMAGE ID', 'PARENT ID', 'CREATED', 'LAYER SIZE', 'VIRTUAL SIZE'), file=outfile)
+    print(fields_fmt.format('REPO TAG', 'IMAGE ID', 'PARENT ID', 'CREATED', 'LAYER SIZE', 'VIRTUAL SIZE'), file=outfile)
 
-    for l in layers:
+    total_size = sum(( l['Size'] for l in layers ))
+
+    for layer in layers:
         try:
-            image_tag = l[':repo_tags'][0]
+            image_tag = layer[':repo_tags'][0]
         except IndexError:
             image_tag = '-'
 
-        image_id = l[':short_id']
-        parent_id = l[':parent_id'][:12].lower()
+        image_id = layer[':short_id']
+        parent_id = layer[':parent_id'][:12].lower()
 
         if not parent_id:
             parent_id = '-'
 
-        created = naturaltime(l[':created_dt'])
-        layer_size = naturalsize(l['Size'])
-        total_size += l['Size']
+        created = naturaltime(layer[':created_dt'])
+        layer_size = naturalsize(layer['Size'])
         virt_size = naturalsize(total_size)
         print(fields_fmt.format(image_tag, image_id, parent_id, created, layer_size, virt_size), file=outfile)
+        total_size -= layer['Size']
 
 #=========================================================================
 def selectlayers(args, layers):
@@ -331,6 +313,9 @@ def selectlayers(args, layers):
 
     if layer_specs is None:
         selected_indexes = list(range(len(layers[':layers'])))
+
+        if args.reverse:
+            selected_indexes.reverse()
     else:
         selected_indexes = []
         last_num_selected_indexes = num_selected_indexes = len(selected_indexes)
@@ -363,18 +348,18 @@ def selectlayers(args, layers):
                 else:
                     _LOGGER.warning(empty_layer_range_msg, v)
 
-    if args.reverse:
-        selected_indexes.reverse()
+        if not args.reverse:
+            selected_indexes.reverse()
 
     # Take the last of each index specified (so we don't have to look at
     # each distinct layer more than once)
     seen = OrderedDict()
 
-    for i in selected_indexes[::-1]:
+    for i in selected_indexes:
         if i not in seen:
             seen[i] = None # use OrderedDict as an ordered set
 
-    top_most_layer_id = None if not seen else layers[':layers'][max(seen)][':id']
-    selected_layers = [ layers[':layers'][i] for i in seen ][::-1]
+    top_most_layer_id = None if not seen else layers[':layers'][min(seen)][':id']
+    selected_layers = [ layers[':layers'][i] for i in seen ]
 
     return top_most_layer_id, selected_layers

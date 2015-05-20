@@ -55,47 +55,48 @@ Help is available via ``-h`` or ``--help``:
    Docker IMaGe layer eXtractor (and flattener)
    ...
 
-Extract and flatten the first three layers of the image named ``nifty-box`` into an archive called ``nifty.tar``:
+Without the target (the ``-t`` option), ``dimgx`` will display the layer extraction order (and some other information) without performing any retrieval or extraction (in order of greatest to least precidence):
 
 .. code-block:: sh
 
-   % dimgx -l 0:2 -r -t nifty.tar nifty-box
+   % docker images --all
+   REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+   nifty-box           latest              6667bbd4093c        18 hours ago        144 MB
+   <none>              <none>              82e5dcafc08c        18 hours ago        125.2 MB
+   <none>              <none>              cd5e80677a53        18 hours ago        125.2 MB
+   debian              jessie              df2a0347c9d0        21 hours ago        125.2 MB
+   <none>              <none>              39bb80489af7        21 hours ago        125.2 MB
+   % dimgx nifty-box
+   REPO TAG                IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
+   nifty-box               6667bbd4093c    82e5dcafc08c    18 hours ago    18.8 MB         144.0 MB
+   -                       82e5dcafc08c    cd5e80677a53    18 hours ago    1.8 kB          125.2 MB
+   -                       cd5e80677a53    df2a0347c9d0    18 hours ago    0 Bytes         125.2 MB
+   debian:jessie           df2a0347c9d0    39bb80489af7    21 hours ago    0 Bytes         125.2 MB
+   -                       39bb80489af7    -               21 hours ago    125.2 MB        125.2 MB
 
-Extract and flatten the most recent three layers of the image named ``nifty-box`` into an archive with bzip2 compression written to ``STDOUT`` (note that there is no space after the ``-l`` option when a range begins with a negative index; this is to work around a `limitation <https://docs.python.org/2/library/argparse.html#arguments-containing>`__ of Python's :py:mod:`argparse` module):
+Layers can be extracted in any order, and ranges are supported (but see `Limitations`_ below about extracting layers out of order or using the ``-r`` option):
 
 .. code-block:: sh
 
-   % dimgx -l-3:-1 -r -t - --bzip2 nifty-box >nifty.tar.bz2
+   % dimgx -l 39bb:df2a -l 6667:82e5 -l cd5e nifty-box
+   REPO TAG                IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
+   -                       cd5e80677a53    df2a0347c9d0    18 hours ago    0 Bytes         144.0 MB
+   -                       82e5dcafc08c    cd5e80677a53    18 hours ago    1.8 kB          144.0 MB
+   nifty-box               6667bbd4093c    82e5dcafc08c    18 hours ago    18.8 MB         144.0 MB
+   debian:jessie           df2a0347c9d0    39bb80489af7    21 hours ago    0 Bytes         125.2 MB
+   -                       39bb80489af7    -               21 hours ago    125.2 MB        125.2 MB
+
+Extract and flatten all layers of the image named ``nifty-box`` into a bzip2'ed archive called ``nifty.tar.bz2``:
+
+.. code-block:: sh
+
+   % dimgx --bzip -t nifty.tar.bz2 nifty-box
 
 LZMA2 compression is not supported natively, but output can be piped to an external utility:
 
 .. code-block:: sh
 
    % dimgx -t - nifty-box | xz -9c >nifty.tar.xz
-
-Omit the target (the ``-t`` option) to display the layer extraction order (and some other information) without performing any retrieval or extraction:
-
-.. code-block:: sh
-
-   % dimgx -l 1:2 -l 6:5 -l 3 nifty-box
-   IMAGE TAG               IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
-   debian:jessie           41b730702607    3cb35ae859e7    12 days ago     0 Bytes         0 Bytes
-   -                       60aa72e3db11    41b730702607    2 days ago      0 Bytes         0 Bytes
-   nifty-box               0bb92bb75744    51a39b466ad7    34 minutes ago  1.7 kB          1.7 kB
-   -                       51a39b466ad7    fec4e64b2b57    2 days ago      0 Bytes         1.7 kB
-   -                       390ac3ff1e87    60aa72e3db11    2 days ago      1.7 kB          3.4 kB
-
-Image IDs can be used in lieu of or mixed with indexes:
-
-.. code-block:: sh
-
-   % dimgx -l 41b730702607:2 -l 6:51a39b466ad7 -l 390ac3ff1e87 nifty-box
-   IMAGE TAG               IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
-   debian:jessie           41b730702607    3cb35ae859e7    12 days ago     0 Bytes         0 Bytes
-   -                       60aa72e3db11    41b730702607    2 days ago      0 Bytes         0 Bytes
-   nifty-box               0bb92bb75744    51a39b466ad7    34 minutes ago  1.7 kB          1.7 kB
-   -                       51a39b466ad7    fec4e64b2b57    2 days ago      0 Bytes         1.7 kB
-   -                       390ac3ff1e87    60aa72e3db11    2 days ago      1.7 kB          3.4 kB
 
 Limitations
 -----------

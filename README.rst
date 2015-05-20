@@ -86,32 +86,30 @@ Examples
 ::
 
   % dimgx nifty-box # show layers for "nifty-box[:latest]"
-  IMAGE TAG               IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
-  -                       3cb35ae859e7    -               16 days ago     125.1 MB        125.1 MB
-  debian:jessie           41b730702607    3cb35ae859e7    16 days ago     0 Bytes         125.1 MB
-  -                       60aa72e3db11    41b730702607    7 days ago      0 Bytes         125.1 MB
-  -                       390ac3ff1e87    60aa72e3db11    6 days ago      1.7 kB          125.1 MB
-  -                       fec4e64b2b57    390ac3ff1e87    6 days ago      9.4 MB          134.5 MB
-  -                       51a39b466ad7    fec4e64b2b57    6 days ago      0 Bytes         134.5 MB
-  nifty-box               0bb92bb75744    51a39b466ad7    4 days ago      1.7 kB          134.5 MB
+  REPO TAG                IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
+  nifty-box               6667bbd4093c    82e5dcafc08c    18 hours ago    18.8 MB         144.0 MB
+  -                       82e5dcafc08c    cd5e80677a53    18 hours ago    1.8 kB          125.2 MB
+  -                       cd5e80677a53    df2a0347c9d0    18 hours ago    0 Bytes         125.2 MB
+  debian:jessie           df2a0347c9d0    39bb80489af7    21 hours ago    0 Bytes         125.2 MB
+  -                       39bb80489af7    -               21 hours ago    125.2 MB        125.2 MB
 
 ..
 
 ::
 
-  % dimgx -l 2:4 nifty-box # show only the second through fourth layers
+  % dimgx -l df2a:82ef nifty-box # show only the second through fourth layers
   IMAGE TAG               IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
-  debian:jessie           60aa72e3db11    41b730702607    7 days ago      0 Bytes         0 Bytes
-  -                       390ac3ff1e87    60aa72e3db11    6 days ago      1.7 kB          1.7 kB
-  -                       fec4e64b2b57    390ac3ff1e87    6 days ago      9.4 MB          9.4 MB
+  -                       82e5dcafc08c    cd5e80677a53    18 hours ago    1.8 kB          125.2 MB
+  -                       cd5e80677a53    df2a0347c9d0    18 hours ago    0 Bytes         125.2 MB
+  debian:jessie           df2a0347c9d0    39bb80489af7    21 hours ago    0 Bytes         125.2 MB
 
 ..
 
 ::
 
-  % dimgx -l 2:4 -t nifty.tar nifty-box # extract them
-  % du -h nifty.tar
-  9.0M    nifty.tar
+  % dimgx -l cd5e:6667 -t nifty.tar nifty-box # extract the third through fifth layers
+  % du -hs nifty.tar
+   18M    nifty.tar
 
 Issues
 ------
