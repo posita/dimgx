@@ -12,4 +12,3 @@
 
 .. automodule:: dimgx
    :members:
-   :special-members:

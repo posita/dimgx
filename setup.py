@@ -78,7 +78,7 @@ _SETUP_ARGS = {
     'author_email'        : 'mtb19@columbia.edu',
     'url'                 : 'https://dimgx.readthedocs.org/en/{}/'.format(__release__),
     'license'             : 'MIT License',
-    'description'         : 'extract and flatten Docker image layers',
+    'description'         : 'Docker IMaGe layer eXtractor (and flattener)',
     'long_description'    : open(ospath_join(_MY_DIR, 'README.rst')).read(),
 
     # From <http://pypi.python.org/pypi?%3Aaction=list_classifiers>

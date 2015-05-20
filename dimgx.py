@@ -3,7 +3,7 @@
 
 #=========================================================================
 """
-  Copyright |(c)| 2015 `Matt Bogosian`_ (|@posita|_).
+  Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
 
   .. |(c)| unicode:: u+a9
   .. _`Matt Bogosian`: mailto:mtb19@columbia.edu
@@ -56,6 +56,13 @@
 
   Module Contents
   ---------------
+
+  .. |docker.Client| replace:: :class:`docker.Client`
+  .. _`docker.Client`: https://docker-py.readthedocs.org/en/latest/api/
+  .. |docker.Client.images| replace:: :func:`docker.Client.images`
+  .. _`docker.Client.images`: https://docker-py.readthedocs.org/en/latest/api/#images
+  .. |docker.Client.inspect_image| replace:: :py:func:`docker.Client.inspect_image`
+  .. _`docker.Client.inspect_image`: https://docker-py.readthedocs.org/en/latest/api/#inspect_image
   """
 #=========================================================================
 
@@ -175,9 +182,6 @@ def extractlayers(dc, layers, tar_file, top_most_layer=-1):
     the same value as the :obj:`image_spec` parameter to
     :func:`inspectlayers`, but this may be ineffecient if that layer does
     not appear in :obj:`layers`.
-
-    .. |docker.Client| replace:: :class:`docker.Client`
-    .. _`docker.Client`: https://docker-py.readthedocs.org/en/latest/api/
     """
     if not layers:
         _LOGGER.warning('nothing to extract')
@@ -298,11 +302,6 @@ def inspectlayers(dc, image_spec):
     the root to :obj:`image_spec`). The other entries map the layers'
     various IDs, to their respective indexes in the :attr:`':layers'`
     :class:`tuple`.
-
-    .. |docker.Client| replace:: :class:`docker.Client`
-    .. _`docker.Client`: https://docker-py.readthedocs.org/en/latest/api/
-    .. |docker.Client.images| replace:: :func:`docker.Client.images`
-    .. _`docker.Client.images`: https://docker-py.readthedocs.org/en/latest/api/#images
     """
     images = logexception(_LOGGER, ERROR, 'unable to retrieve image summaries: {{e}}'.format(), dc.images, all=True)
     images_dict = {}
@@ -379,11 +378,6 @@ def normalizeimage(image_desc, copy=False):
       representing :attr:`'Created'`
     * :attr:`':repo_tags'` - a normalized :attr:`'RepoTags'`, including
       any short names (i.e., those implying ``:latest``)
-
-    .. |docker.Client.images| replace:: :py:func:`docker.Client.images`
-    .. _`docker.Client.images`: https://docker-py.readthedocs.org/en/latest/api/#images
-    .. |docker.Client.inspect_image| replace:: :py:func:`docker.Client.inspect_image`
-    .. _`docker.Client.inspect_image`: https://docker-py.readthedocs.org/en/latest/api/#inspect_image
     """
     if copy:
         image = deepcopy(image_desc)

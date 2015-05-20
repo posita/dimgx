@@ -2,7 +2,7 @@
 
 #=========================================================================
 """
-  Copyright |(c)| 2015 `Matt Bogosian`_ (|@posita|_).
+  Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
 
   .. |(c)| unicode:: u+a9
   .. _`Matt Bogosian`: mailto:mtb19@columbia.edu
@@ -105,7 +105,7 @@ _USAGE = """
 """
 
 _DESCRIPTION = """
-Extract and flatten Docker image layers.
+Docker IMaGe layer eXtractor (and flattener)
 """
 
 _EPILOG = """

@@ -22,8 +22,22 @@ If such a file did not accompany this software, then please contact the author b
 .. |LICENSE.txt| replace:: ``LICENSE.txt``
 .. _`LICENSE.txt`: LICENSE
 
-``dimgx``
-=========
+.. image:: https://travis-ci.org/posita/py-dimgx.svg?branch=master
+   :target: https://travis-ci.org/posita/py-dimgx?branch=master
+   :alt: Build Status
+
+.. image:: https://coveralls.io/repos/posita/py-dimgx/badge.svg?branch=master
+   :target: https://coveralls.io/r/posita/py-dimgx?branch=master
+   :alt: Coverage Status
+
+Curious about integrating your project with the above services?
+Jeff Knupp (|@jeffknupp|_) `describes how <http://www.jeffknupp.com/blog/2013/08/16/open-sourcing-a-python-project-the-right-way/>`__.
+
+.. |@jeffknupp| replace:: **@jeffknupp**
+.. _`@jeffknupp`: https://github.com/jeffknupp
+
+``dimgx`` - Docker IMaGe layer eXtractor (and flattener)
+========================================================
 
 .. image:: https://pypip.in/version/dimgx/badge.svg
    :target: https://pypi.python.org/pypi/dimgx/
@@ -49,35 +63,23 @@ If such a file did not accompany this software, then please contact the author b
    :target: https://pypi.python.org/pypi/dimgx/master
    :alt: Development Stage
 
-Status
-------
-
-.. image:: https://travis-ci.org/posita/py-dimgx.svg?branch=master
-   :target: https://travis-ci.org/posita/py-dimgx?branch=master
-   :alt: Build Status
-
-.. image:: https://coveralls.io/repos/posita/py-dimgx/badge.svg?branch=master
-   :target: https://coveralls.io/r/posita/py-dimgx?branch=master
-   :alt: Coverage Status
-
-Curious about integrating your project with the above services?
-Jeff Knupp (|@jeffknupp|_) `describes how <http://www.jeffknupp.com/blog/2013/08/16/open-sourcing-a-python-project-the-right-way/>`__.
-
-.. |@jeffknupp| replace:: **@jeffknupp**
-.. _`@jeffknupp`: https://github.com/jeffknupp
-
-**TL;DR**
----------
-
 ``dimgx`` extracts and flattens `Docker <https://www.docker.com/whatisdocker/>`_ `image <https://docs.docker.com/terms/image/>`__ `layers <https://docs.docker.com/terms/layer/>`__:
+It is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_.
+Source code is `available on GitHub <https://github.com/posita/py-dimgx>`__.
+See `the docs <https://dimgx.readthedocs.org/en/master/>`__ for more information.
+
+Examples
+--------
 
 ::
 
-  % dimgx
+  % dimgx -h
   usage:
   dimgx [options] [-l LAYER_SPEC] ... [-t PATH] IMAGE_SPEC
   dimgx -h # for help
-  dimgx: error: too few arguments
+
+  Docker IMaGe layer eXtractor (and flattener)
+  ...
 
 ..
 
@@ -111,13 +113,9 @@ Jeff Knupp (|@jeffknupp|_) `describes how <http://www.jeffknupp.com/blog/2013/08
   % du -h nifty.tar
   9.0M    nifty.tar
 
-``dimgx`` is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_.
-Source code is `available on GitHub <https://github.com/posita/py-dimgx>`__.
-See `the docs <https://dimgx.readthedocs.org/en/master/>`__ for more information.
-
 Issues
 ------
 
 ``dimgx`` does what I want, so I'm just maintaining it at this point.
 If you find a bug, or want a feature, please `file an issue <https://github.com/posita/py-dimgx/issues>`__ (if it hasn't already been filed).
-If you're willing and able, consider `contributing <https://dimgx.readthedocs.org/en/master/submissions.html>`__.
+If you're willing and able, consider `contributing <https://dimgx.readthedocs.org/en/master/contrib.html>`__.
