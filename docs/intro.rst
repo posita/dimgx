@@ -29,7 +29,7 @@ If such a file did not accompany this software, then please contact the author b
 Introduction
 ============
 
-``dimgx`` (pronounced *DIH-muhj-EHKS* [#pronunciation]_) is a command line tool and pure Python module for extracting `Docker <https://www.docker.com/whatisdocker/>`_ `image <https://docs.docker.com/terms/image/>`__ `layers <https://docs.docker.com/terms/layer/>`__ and flattening them into a single tar archive.
+``dimgx`` (pronounced *DIH-muhj-EHKS* [#pronunciation]_) is a :doc:`command line tool <cli>` and :doc:`pure Python module <py>` for extracting `Docker <https://www.docker.com/whatisdocker/>`_ `image <https://docs.docker.com/terms/image/>`__ `layers <https://docs.docker.com/terms/layer/>`__ and flattening them into a single tar archive.
 
 .. [#pronunciation] World Book Online (WBO) style `pronunciation respelling <https://en.wikipedia.org/wiki/Pronunciation_respelling_for_English>`__.
 
