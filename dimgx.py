@@ -72,6 +72,7 @@ from __future__ import (
 
 from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
+from future.utils import native
 
 #---- Imports ------------------------------------------------------------
 
@@ -439,9 +440,7 @@ def normalizeimage(image_desc, copy=False):
         # Work-around for
         # <https://github.com/PythonCharmers/python-future/issues/144> and
         # <https://bitbucket.org/pypy/pypy/issue/2048/datetimeutcfromtimestamp-barfs-when>
-        if hasattr(image_created, '__native__'):
-            image_created = image_created.__native__()
-
+        image_created = native(image_created)
         image[':created_dt'] = datetime.utcfromtimestamp(image_created).replace(tzinfo=TZ_UTC)
     else:
         image[':created_dt'] = dateutil_parse(image_created)
