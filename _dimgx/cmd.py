@@ -48,7 +48,6 @@ from os import (
     O_TRUNC,
     O_WRONLY,
     SEEK_CUR,
-    environ,
     fdopen,
     fstat,
     lseek,
@@ -69,8 +68,8 @@ from sys import (
     stdout,
 )
 from tarfile import open as tarfile_open
-from docker import Client
-from docker.utils.utils import DEFAULT_UNIX_SOCKET as DOCKER_DEFAULT_UNIX_SOCKET
+from docker import AutoVersionClient
+from docker.utils import kwargs_from_env
 from humanize import naturalsize
 from dimgx import (
     inspectlayers,
@@ -160,11 +159,6 @@ def buildparser():
     target_group.add_argument('-Q', '--no-quiet', action='store_false', dest='quiet', help='when no target is specified, print the image IDs with additional information in a table (default)')
     target_group.add_argument('-w', '--force', action='store_true', dest='force', help='overwrite the target archive if it already exists')
     target_group.add_argument('-W', '--no-force', action='store_false', dest='force', help='don\'t overwrite the target archive if it already exists (default)')
-
-    environ_docker_host = environ.get('DOCKER_HOST')
-    docker_host = environ_docker_host if environ_docker_host else DOCKER_DEFAULT_UNIX_SOCKET
-    docker_group = parser.add_argument_group()
-    docker_group.add_argument('-d', '--docker-host', default=docker_host, help='the Docker host URI (defaults to "{}" or DOCKER_HOST, if set)'.format(DOCKER_DEFAULT_UNIX_SOCKET.replace('%', '%%')), metavar='URI')
 
     compress_group = parser.add_argument_group()
     compress_group.add_argument('-j', '--bzip2', action='store_const', const=_CMP_BZIP2, dest='compression', help='compress the target archive with bzip2 compression')
@@ -263,7 +257,7 @@ def main():
     args = buildparser().parse_args(sys_argv[1:])
     logging_basicConfig(format=args.log_format)
     getLogger().setLevel(logging_getLevelName(args.log_level))
-    dc = Client(args.docker_host)
+    dc = AutoVersionClient(**kwargs_from_env())
     layers_dict = inspectlayers(dc, args.image)
     top_most_layer_id, selected_layers = selectlayers(args, layers_dict)
 
