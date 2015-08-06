@@ -48,6 +48,7 @@ from os import (
     O_TRUNC,
     O_WRONLY,
     SEEK_CUR,
+    environ,
     fdopen,
     fstat,
     lseek,
@@ -83,6 +84,9 @@ from _dimgx import (
 #---- Constants ----------------------------------------------------------
 
 __all__ = ()
+
+DOCKER_TLS_VERIFY = environ.get('DOCKER_TLS_VERIFY', None)
+DOCKER_TLS_VERIFY = DOCKER_TLS_VERIFY if DOCKER_TLS_VERIFY else None
 
 _LOGGER = getLogger(__name__)
 _LAYER_RE_STR = r'(?:[0-9A-Fa-f]{1,64})'
@@ -257,7 +261,13 @@ def main():
     args = buildparser().parse_args(sys_argv[1:])
     logging_basicConfig(format=args.log_format)
     getLogger().setLevel(logging_getLevelName(args.log_level))
-    dc = AutoVersionClient(**kwargs_from_env())
+    dc_kw = kwargs_from_env()
+
+    # TODO: hack to work around docker/docker-py#706
+    if DOCKER_TLS_VERIFY == '0':
+        kw['tls'].assert_hostname = False
+
+    dc = AutoVersionClient(**dc_kw)
     layers_dict = inspectlayers(dc, args.image)
     top_most_layer_id, selected_layers = selectlayers(args, layers_dict)
 
