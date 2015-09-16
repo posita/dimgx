@@ -27,13 +27,16 @@ from future.builtins.disabled import * # pylint: disable=redefined-builtin,unuse
 
 #---- Imports ------------------------------------------------------------
 
+from argparse import ArgumentParser
 from io import StringIO
+from os import linesep
 from unittest import TestCase
 from _dimgx.cmd import (
     buildparser,
     printlayerinfo,
     selectlayers,
 )
+from _dimgx.version import __version__
 from dimgx import inspectlayers
 from tests.fauxdockerclient import FauxDockerClient
 
@@ -42,6 +45,35 @@ from tests.fauxdockerclient import FauxDockerClient
 __all__ = ()
 
 #---- Classes ------------------------------------------------------------
+
+#=========================================================================
+class FakeSystemExit(Exception):
+    pass
+
+#=========================================================================
+class FakeExitingArgumentParser(ArgumentParser):
+
+    #---- Constructor ----------------------------------------------------
+
+    #=====================================================================
+    def __init__(self, *args, **kw):
+        ArgumentParser.__init__(self, *args, **kw)
+        self.buf = StringIO()
+
+    #---- Public hook methods --------------------------------------------
+
+    #=====================================================================
+    def exit(self, status=0, message=None):
+        try:
+            return ArgumentParser.exit(self, status, message)
+        except SystemExit:
+            raise FakeSystemExit(status)
+
+    #---- Private hook methods -------------------------------------------
+
+    #=====================================================================
+    def _print_message(self, message, file=None): # pylint: disable=redefined-outer-name,unused-argument
+        return ArgumentParser._print_message(self, message, self.buf)
 
 #=========================================================================
 class CommandTestCase(TestCase):
@@ -53,8 +85,13 @@ class CommandTestCase(TestCase):
         super().setUp()
         self.longMessage = True
         self.maxDiff = None
-        self._parser = buildparser()
+        self._parser = buildparser(FakeExitingArgumentParser)
         self._dc = FauxDockerClient()
+
+    #=====================================================================
+    def tearDown(self):
+        super().tearDown()
+        self._parser.buf.close()
 
     #=====================================================================
     def test_layerspecs(self):
@@ -167,6 +204,22 @@ class CommandTestCase(TestCase):
             printlayerinfo(args, selected_layers, outfile)
             outfile.seek(0)
             self.assertEqual([ l.strip() for l in outfile ], layer_ids)
+
+    #=====================================================================
+    def test_version(self):
+        try:
+            self._parser.parse_args(( '-V', ))
+        except FakeSystemExit:
+            self.assertTrue(self._parser.buf.getvalue().endswith(' ' + __version__ + linesep))
+        else:
+            self.assertFail('-V did not cause exit')
+
+        try:
+            self._parser.parse_args(( '--version', ))
+        except FakeSystemExit:
+            self.assertTrue(self._parser.buf.getvalue().endswith(' ' + __version__ + linesep))
+        else:
+            self.assertFail('--version did not cause exit')
 
 #---- Initialization -----------------------------------------------------
 

@@ -80,6 +80,7 @@ from _dimgx import (
     logexception,
     naturaltime,
 )
+from _dimgx.version import __version__
 
 #---- Constants ----------------------------------------------------------
 
@@ -146,8 +147,9 @@ def exitonraise(f):
 #---- Functions ----------------------------------------------------------
 
 #=========================================================================
-def buildparser():
-    parser = ArgumentParser(description=_DESCRIPTION, epilog=_EPILOG, usage=_USAGE)
+def buildparser(cls=ArgumentParser):
+    parser = cls(description=_DESCRIPTION, epilog=_EPILOG, usage=_USAGE)
+    parser.add_argument('-V', '--version', action='version', version='%(prog)s {}'.format(__version__))
     parser.add_argument('image', help='the name or ID of the Docker image', metavar='IMAGE_SPEC')
 
     layer_group = parser.add_argument_group(description=_LAYER_GROUP_DESCRIPTION)
