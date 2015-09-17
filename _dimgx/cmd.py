@@ -267,7 +267,7 @@ def main():
 
     # TODO: hack to work around docker/docker-py#706
     if DOCKER_TLS_VERIFY == '0':
-        kw['tls'].assert_hostname = False
+        dc_kw['tls'].assert_hostname = False
 
     dc = AutoVersionClient(**dc_kw)
     layers_dict = inspectlayers(dc, args.image)
