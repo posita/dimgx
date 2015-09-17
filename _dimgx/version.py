@@ -25,5 +25,5 @@ from __future__ import (
 
 __all__ = ()
 
-__version__ = 'master'
-__release__ = 'master'
+__version__ = '0.2.3'
+__release__ = 'v0.2.3'
