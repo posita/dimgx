@@ -141,4 +141,4 @@ Limitations
 
 * No thought has been given to i18n.
 
-It is unlikely that I will tackle (m)any of these warts, but `PRs are welcome <https://github.com/posita/py-dimgx#submissions>`__.
+It is unlikely that I will tackle (m)any of these warts, but `PRs are welcome <contrib>`__.
