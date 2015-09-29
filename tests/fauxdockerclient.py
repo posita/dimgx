@@ -1,4 +1,4 @@
-#-*-mode: python; encoding: utf-8-*-
+#-*- mode: python; encoding: utf-8 -*-
 
 #=========================================================================
 """
@@ -20,7 +20,6 @@
 from __future__ import (
     absolute_import, division, print_function, unicode_literals,
 )
-
 from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 from future.utils import iteritems
@@ -91,7 +90,6 @@ class FauxDockerClient(object):
 
     #---- Protected static methods ---------------------------------------
 
-    #=====================================================================
     @staticmethod
     def _checkandraise(f):
         @wraps(f)
@@ -106,7 +104,6 @@ class FauxDockerClient(object):
 
     #---- Constructor ----------------------------------------------------
 
-    #=====================================================================
     def __init__(self, always_raise=None):
         super().__init__()
         self._always_raise = always_raise
@@ -169,9 +166,8 @@ class FauxDockerClient(object):
 
         self.layers.sort(key=imagekey, reverse=True)
 
-    #---- Public hook methods --------------------------------------------
+    #---- Public hooks ---------------------------------------------------
 
-    #=====================================================================
     @_checkandraise.__func__
     def get_image(self, image):
         if not image:
@@ -211,7 +207,6 @@ class FauxDockerClient(object):
 
         return image_file
 
-    #=====================================================================
     @_checkandraise.__func__
     def images(self, name=None, quiet=False, all=False, viz=False, filters=None): # pylint: disable=redefined-outer-name
         checks = (
@@ -247,14 +242,12 @@ class FauxDockerClient(object):
 
         return images
 
-    #=====================================================================
     @_checkandraise.__func__
     def inspect_image(self, image_id): # pylint: disable=unused-argument
         raise NotImplementedError()
 
     #---- Protected methods ----------------------------------------------
 
-    #=====================================================================
     @_checkandraise.__func__
     def _findlayer(self, image_id):
         if image_id.lower() in self.layers_by_id:

@@ -1,4 +1,4 @@
-#-*-mode: python; encoding: utf-8-*-
+#-*- mode: python; encoding: utf-8 -*-
 
 #=========================================================================
 """
@@ -20,7 +20,6 @@
 from __future__ import (
     absolute_import, division, print_function, unicode_literals,
 )
-
 from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 # pylint: disable=missing-super-argument
@@ -55,32 +54,28 @@ class FakeExitingArgumentParser(ArgumentParser):
 
     #---- Constructor ----------------------------------------------------
 
-    #=====================================================================
     def __init__(self, *args, **kw):
         ArgumentParser.__init__(self, *args, **kw)
         self.buf = StringIO()
 
-    #---- Public hook methods --------------------------------------------
+    #---- Public hooks ---------------------------------------------------
 
-    #=====================================================================
     def exit(self, status=0, message=None):
         try:
             return ArgumentParser.exit(self, status, message)
         except SystemExit:
             raise FakeSystemExit(status)
 
-    #---- Private hook methods -------------------------------------------
+    #---- Private hooks --------------------------------------------------
 
-    #=====================================================================
     def _print_message(self, message, file=None): # pylint: disable=redefined-outer-name,unused-argument
         return ArgumentParser._print_message(self, message, self.buf)
 
 #=========================================================================
 class CommandTestCase(TestCase):
 
-    #---- Public hook methods --------------------------------------------
+    #---- Public hooks ---------------------------------------------------
 
-    #=====================================================================
     def setUp(self):
         super().setUp()
         self.longMessage = True
@@ -88,12 +83,10 @@ class CommandTestCase(TestCase):
         self._parser = buildparser(FakeExitingArgumentParser)
         self._dc = FauxDockerClient()
 
-    #=====================================================================
     def tearDown(self):
         super().tearDown()
         self._parser.buf.close()
 
-    #=====================================================================
     def test_layerspecs(self):
         path_ids = FauxDockerClient.SHORT_IDS_BY_PATH[0]
         image_spec = '52d7263f000f'
@@ -205,7 +198,6 @@ class CommandTestCase(TestCase):
             outfile.seek(0)
             self.assertEqual([ l.strip() for l in outfile ], layer_ids)
 
-    #=====================================================================
     def test_version(self):
         try:
             self._parser.parse_args(( '-V', ))

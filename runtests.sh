@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-#-*-mode: sh; encoding: utf-8-*-
+#-*- mode: sh; encoding: utf-8 -*-
 
 #=========================================================================
 # Copyright (c) 2015 Matt Bogosian <mtb19@columbia.edu>.

@@ -1,4 +1,4 @@
-#-*-mode: python; encoding: utf-8-*-
+#-*- mode: python; encoding: utf-8 -*-
 
 #=========================================================================
 """
@@ -20,7 +20,6 @@
 from __future__ import (
     absolute_import, division, print_function, unicode_literals,
 )
-
 from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 
@@ -265,7 +264,7 @@ def main():
     getLogger().setLevel(logging_getLevelName(args.log_level))
     dc_kw = kwargs_from_env()
 
-    # TODO: hack to work around docker/docker-py#706
+    # TODO: hack to work around github:docker/docker-py#706
     if DOCKER_TLS_VERIFY == '0':
         dc_kw['tls'].assert_hostname = False
 

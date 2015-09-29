@@ -1,4 +1,4 @@
-#-*-mode: python; encoding: utf-8-*-
+#-*- mode: python; encoding: utf-8 -*-
 
 #=========================================================================
 """
@@ -20,7 +20,6 @@
 from __future__ import (
     absolute_import, division, print_function, unicode_literals,
 )
-
 from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 # pylint: disable=missing-super-argument
@@ -54,21 +53,18 @@ class HashedBytesIo(BytesIO):
 
     #---- Constructor ----------------------------------------------------
 
-    #=====================================================================
     def __init__(self, initial_bytes=None, hashimpl=sha256):
         super().__init__(initial_bytes)
         self._hash_obj = hashimpl()
 
     #---- Public properties ----------------------------------------------
 
-    #=====================================================================
     @property
     def hash_obj(self):
         return self._hash_obj
 
-    #---- Public hook methods --------------------------------------------
+    #---- Public hooks ---------------------------------------------------
 
-    #=====================================================================
     def write(self, b):
         super().write(b)
         self._hash_obj.update(b)

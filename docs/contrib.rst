@@ -1,4 +1,4 @@
-.. -*-mode: rst; encoding: utf-8-*-
+.. -*- mode: rst; encoding: utf-8 -*-
    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
    >>>>>>>>>>>>>>>> IMPORTANT: READ THIS BEFORE EDITING! <<<<<<<<<<<<<<<<
    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -34,7 +34,7 @@ There are several ways you can contribute.
 Filing Issues
 -------------
 
-You can `file new issues <https://github.com/posita/py-dimgx/issues>`__ as you find them.
+You can `file new issues <https://github.com/posita/dimgx/issues>`__ as you find them.
 Please avoid duplicating issues.
 These may be helpful:
 
@@ -44,7 +44,7 @@ These may be helpful:
 Submission Guidelines
 ---------------------
 
-If you're willing and able, consider `submitting a pull request <https://github.com/posita/py-dimgx/pulls>`__ (PR) with a fix.
+If you're willing and able, consider `submitting a pull request <https://github.com/posita/dimgx/pulls>`__ (PR) with a fix.
 There are only a few guidelines:
 
 * If it isn't already there, please add your name (and optionally your GitHub username, email, website address, or other contact information) to the ``CREDITS`` file::

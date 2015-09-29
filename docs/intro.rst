@@ -1,4 +1,4 @@
-.. -*-mode: rst; encoding: utf-8-*-
+.. -*- mode: rst; encoding: utf-8 -*-
    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
    >>>>>>>>>>>>>>>> IMPORTANT: READ THIS BEFORE EDITING! <<<<<<<<<<<<<<<<
    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -37,7 +37,7 @@ License
 -------
 
 ``dimgx`` is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_.
-Source code is `available on GitHub <https://github.com/posita/py-dimgx>`__.
+Source code is `available on GitHub <https://github.com/posita/dimgx>`__.
 
 Installation
 ------------
@@ -49,13 +49,13 @@ Installation can be performed via ``pip`` (which will download and install the `
   % pip install dimgx
   ...
 
-Alternately, you can download the sources (e.g., `from GitHub <https://github.com/posita/py-dimgx>`__) and run ``setup.py``:
+Alternately, you can download the sources (e.g., `from GitHub <https://github.com/posita/dimgx>`__) and run ``setup.py``:
 
 .. code-block:: sh
 
-  % git clone https://github.com/posita/py-dimgx
+  % git clone https://github.com/posita/dimgx
   ...
-  % cd py-dimgx
+  % cd dimgx
   % python setup.py install
   ...
 

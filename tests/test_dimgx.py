@@ -1,4 +1,4 @@
-#-*-mode: python; encoding: utf-8-*-
+#-*- mode: python; encoding: utf-8 -*-
 
 #=========================================================================
 """
@@ -20,7 +20,6 @@
 from __future__ import (
     absolute_import, division, print_function, unicode_literals,
 )
-
 from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
 from future.utils import iteritems
@@ -61,16 +60,14 @@ _EMTPY_TAR_SHA256 = '84ff92691f909a05b224e1c56abb4864f01b4f8e3c854e4bb4c7baf1d3f
 #=========================================================================
 class DimgxTestCase(TestCase):
 
-    #---- Public hook methods --------------------------------------------
+    #---- Public hooks ---------------------------------------------------
 
-    #=====================================================================
     def setUp(self):
         super().setUp()
         self.longMessage = True
         self.maxDiff = None
         self._dc = FauxDockerClient()
 
-    #=====================================================================
     def test_extractall(self):
         specs = (
 ( 'getto:dachoppa', slice(None), 'ffd384a2a277c9c1183e5f28da244cc0f4fe92d45e273eaf142dcc4e8fd0e5ef', 0 ),
@@ -81,7 +78,6 @@ class DimgxTestCase(TestCase):
 
         self._check_specs(specs)
 
-    #=====================================================================
     def test_extractempty(self):
         specs = (
 ( 'getto:dachoppa', ( 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc ), _EMTPY_TAR_SHA256, 0 ),
@@ -94,7 +90,6 @@ class DimgxTestCase(TestCase):
 
         self._check_specs(specs)
 
-    #=====================================================================
     def test_extractcombos_path0(self):
         specs = (
 ( 'getto:dachoppa', ( 0xd, ), 'ffd384a2a277c9c1183e5f28da244cc0f4fe92d45e273eaf142dcc4e8fd0e5ef', 0 ),
@@ -116,7 +111,6 @@ class DimgxTestCase(TestCase):
 
         self._check_specs(specs)
 
-    #=====================================================================
     def test_extractcombos_path1(self):
         specs = (
 ( 'greatest:hits', ( 0xf, ), '0591d5a0e036416347fb488aa8306e763faa6b914bce257ed9cb6aaa9d42a3ff', 0 ),
@@ -187,7 +181,6 @@ class DimgxTestCase(TestCase):
 
         self._check_specs(specs)
 
-    #=====================================================================
     def test_fauxclientsanity(self):
         self.assertEqual(self._dc.images('<does not exist>', all=True), [])
 
@@ -205,7 +198,6 @@ class DimgxTestCase(TestCase):
         dc = FauxDockerClient(exc)
         self.assertRaises(exc, dc.get_image, None)
 
-    #=====================================================================
     def test_normalizeimage(self):
         images = [
             {
@@ -260,13 +252,11 @@ class DimgxTestCase(TestCase):
 
     #--- Protected methods -----------------------------------------------
 
-    #=====================================================================
     def _check_specs(self, specs):
         for image_id, indexes, hexdigest, top_most_layer in specs:
             hash_tar = self._get_hash_tar(image_id, indexes, top_most_layer)
             self.assertEqual(hash_tar.hash_obj.hexdigest(), hexdigest, msg='image: {}; indexes: {}'.format(image_id, indexes))
 
-    #=====================================================================
     def _dump_tars(self, specs, dump_dir=curdir):
         expanded_dump_dir = expandvars(expanduser(dump_dir))
 
@@ -291,7 +281,6 @@ class DimgxTestCase(TestCase):
             for k, v in iteritems(hashes_to_indexes):
                 print('# {} -> {}'.format(k, v), file=dump_py_file)
 
-    #=====================================================================
     def _get_hash_tar(self, image_id, indexes, top_most_layer):
         target_file = HashedBytesIo()
 

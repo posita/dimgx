@@ -1,4 +1,4 @@
-.. -*-mode: rst; encoding: utf-8-*-
+.. -*- mode: rst; encoding: utf-8 -*-
    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
    >>>>>>>>>>>>>>>> IMPORTANT: READ THIS BEFORE EDITING! <<<<<<<<<<<<<<<<
    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -22,13 +22,13 @@ If such a file did not accompany this software, then please contact the author b
 .. |LICENSE.txt| replace:: ``LICENSE.txt``
 .. _`LICENSE.txt`: LICENSE
 
-.. image:: https://travis-ci.org/posita/py-dimgx.svg?branch=master
-   :target: https://travis-ci.org/posita/py-dimgx?branch=master
-   :alt: Build Status
+.. image:: https://travis-ci.org/posita/dimgx.svg?branch=master
+   :target: https://travis-ci.org/posita/dimgx?branch=master
+   :alt: [Build Status]
 
-.. image:: https://coveralls.io/repos/posita/py-dimgx/badge.svg?branch=master
-   :target: https://coveralls.io/r/posita/py-dimgx?branch=master
-   :alt: Coverage Status
+.. image:: https://coveralls.io/repos/posita/dimgx/badge.svg?branch=master
+   :target: https://coveralls.io/r/posita/dimgx?branch=master
+   :alt: [Coverage Status]
 
 Curious about integrating your project with the above services?
 Jeff Knupp (|@jeffknupp|_) `describes how <http://www.jeffknupp.com/blog/2013/08/16/open-sourcing-a-python-project-the-right-way/>`__.
@@ -41,31 +41,33 @@ Jeff Knupp (|@jeffknupp|_) `describes how <http://www.jeffknupp.com/blog/2013/08
 
 .. image:: https://pypip.in/version/dimgx/badge.svg
    :target: https://pypi.python.org/pypi/dimgx/
-   :alt: Latest Version
+   :alt: [Latest Version]
 
 .. image:: https://readthedocs.org/projects/dimgx/badge/?version=master
    :target: https://dimgx.readthedocs.org/en/master/
-   :alt: Documentation
+   :alt: [Documentation]
 
 .. image:: https://pypip.in/license/dimgx/badge.svg
    :target: http://opensource.org/licenses/MIT
-   :alt: License
+   :alt: [License]
 
 .. image:: https://pypip.in/py_versions/dimgx/badge.svg
    :target: https://pypi.python.org/pypi/dimgx/master
-   :alt: Supported Python Versions
+   :alt: [Supported Python Versions]
 
 .. image:: https://pypip.in/implementation/dimgx/badge.svg
    :target: https://pypi.python.org/pypi/dimgx/master
-   :alt: Supported Python Implementations
+   :alt: [Supported Python Implementations]
 
 .. image:: https://pypip.in/status/dimgx/badge.svg
    :target: https://pypi.python.org/pypi/dimgx/master
-   :alt: Development Stage
+   :alt: [Development Stage]
+
+..
 
 ``dimgx`` extracts and flattens `Docker <https://www.docker.com/whatisdocker/>`_ `image <https://docs.docker.com/terms/image/>`__ `layers <https://docs.docker.com/terms/layer/>`__:
 It is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_.
-Source code is `available on GitHub <https://github.com/posita/py-dimgx>`__.
+Source code is `available on GitHub <https://github.com/posita/dimgx>`__.
 See `the docs <https://dimgx.readthedocs.org/en/master/>`__ for more information.
 
 Examples
@@ -115,5 +117,5 @@ Issues
 ------
 
 ``dimgx`` does what I want, so I'm just maintaining it at this point.
-If you find a bug, or want a feature, please `file an issue <https://github.com/posita/py-dimgx/issues>`__ (if it hasn't already been filed).
+If you find a bug, or want a feature, please `file an issue <https://github.com/posita/dimgx/issues>`__ (if it hasn't already been filed).
 If you're willing and able, consider `contributing <https://dimgx.readthedocs.org/en/master/contrib.html>`__.
