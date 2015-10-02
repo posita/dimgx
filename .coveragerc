@@ -1,4 +1,4 @@
-#-*- encoding: utf-8; mode: yaml -*-
+#-*- encoding: utf-8; mode: ini -*-
 
 #=========================================================================
 # Copyright (c) 2015 Matt Bogosian <mtb19@columbia.edu>.
@@ -10,23 +10,14 @@
 # software in any capacity.
 #=========================================================================
 
-language:
-    - python
+[run] #-------------------------------------------------------------------
 
-python:
-    - 3.4
-
-install:
-    - pip install coveralls tox
-
-env:
-    - TOX_ENV=py27
-    - TOX_ENV=py33
-    - TOX_ENV=py34
-    - TOX_ENV=pypy
-
-script:
-    - tox -e "${TOX_ENV}"
-
-after_success:
-    - coveralls
+omit =
+    .eggs/*
+    .tox/*
+    *.c
+    */distutils/*
+    */lib_pypy/*
+    */site-packages/*
+    tests/*
+    txsocketio/tls.py

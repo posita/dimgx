@@ -1,10 +1,10 @@
-.. -*- mode: rst; encoding: utf-8 -*-
-   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-   >>>>>>>>>>>>>>>> IMPORTANT: READ THIS BEFORE EDITING! <<<<<<<<<<<<<<<<
-   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-   Please keep each sentence on its own unwrapped line.
-   It looks like crap in a text editor, but it has no effect on rendering, and it allows much more useful diffs.
-   Thank you!
+.. -*- encoding: utf-8; mode: rst -*-
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    >>>>>>>>>>>>>>>> IMPORTANT: READ THIS BEFORE EDITING! <<<<<<<<<<<<<<<<
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Please keep each sentence on its own unwrapped line.
+    It looks like crap in a text editor, but it has no effect on rendering, and it allows much more useful diffs.
+    Thank you!
 
 Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
 
@@ -31,9 +31,9 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 3
+    :maxdepth: 3
 
-   intro
-   cli
-   py
-   contrib
+    intro
+    cli
+    py
+    contrib

@@ -1,14 +1,14 @@
-.. -*- mode: rst; encoding: utf-8 -*-
-   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-   >>>>>>>>>>>>>>>> IMPORTANT: READ THIS BEFORE EDITING! <<<<<<<<<<<<<<<<
-   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-   Please keep each sentence on its own unwrapped line.
-   It looks like crap in a text editor, but it has no effect on rendering, and it allows much more useful diffs.
-   Thank you!
+.. -*- encoding: utf-8; mode: rst -*-
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    >>>>>>>>>>>>>>>> IMPORTANT: READ THIS BEFORE EDITING! <<<<<<<<<<<<<<<<
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Please keep each sentence on its own unwrapped line.
+    It looks like crap in a text editor, but it has no effect on rendering, and it allows much more useful diffs.
+    Thank you!
 
 .. toctree::
-   :maxdepth: 3
-   :hidden:
+    :maxdepth: 3
+    :hidden:
 
 Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
 
@@ -46,39 +46,39 @@ Installation can be performed via ``pip`` (which will download and install the `
 
 .. code-block:: sh
 
-  % pip install dimgx
-  ...
+    % pip install dimgx
+    ...
 
 Alternately, you can download the sources (e.g., `from GitHub <https://github.com/posita/dimgx>`__) and run ``setup.py``:
 
 .. code-block:: sh
 
-  % git clone https://github.com/posita/dimgx
-  ...
-  % cd dimgx
-  % python setup.py install
-  ...
+    % git clone https://github.com/posita/dimgx
+    ...
+    % cd dimgx
+    % python setup.py install
+    ...
 
 Requirements
 ------------
 
 A modern version of Python is required:
 
-* `cPython <https://www.python.org/>`_ (2.7 or 3.3+)
+*   `cPython <https://www.python.org/>`_ (2.7 or 3.3+)
 
-* `PyPy <http://pypy.org/>`_ (Python 2.7 or 3.3+ compatible)
+*   `PyPy <http://pypy.org/>`_ (Python 2.7 or 3.3+ compatible)
 
 Python 2.6 will *not* work.
 
 ``dimgx`` has the following dependencies (which will be installed automatically):
 
-* |docker-py|_
+*   |docker-py|_
 
-* |future|_
+*   |future|_
 
-* |humanize|_
+*   |humanize|_
 
-* |python-dateutil|_
+*   |python-dateutil|_
 
 .. |docker-py| replace:: ``docker-py``
 .. _`docker-py`: https://docker-py.readthedocs.org/

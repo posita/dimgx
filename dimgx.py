@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#-*- mode: python; encoding: utf-8 -*-
+#-*- encoding: utf-8; mode: python; grammar-ext: py -*-
 
 #=========================================================================
 """
@@ -29,7 +29,10 @@
 
   Extract all but the first layer of image ``0fe1d2c3b4a5`` to a file
   called ``output.tar`` in the current working directory (without proper
-  error checking)::
+  error checking):
+
+    .. code-block:: python
+        :linenos:
 
         import docker
         import os
@@ -43,16 +46,19 @@
         IMAGE_ID = '0fe1d2c3b4a5' # short version
         layers_dict = inspectlayers(dc, IMAGE_ID)
         with tarfile.open('output.tar', 'w') as tar_file:
-          extractlayers(dc, layers_dict[':layers'][:-1], tar_file)
+            extractlayers(dc, layers_dict[':layers'][:-1], tar_file)
 
   Extract all but the first and last layers *in reverse order* (note the
   ``-1`` provided for the :obj:`top_most_layer` parameter to
-  :func:`extractlayers`)::
+  :func:`extractlayers`):
 
-      with tarfile.open('output.tar', 'w') as tar_file:
-          layers_to_extract = layers_dict[':layers'][1:-1]
-          layers_to_extract.reverse()
-          extractlayers(dc, layers_to_extract, tar_file, top_most_layer=-1)
+    .. code-block:: python
+        :linenos:
+
+        with tarfile.open('output.tar', 'w') as tar_file:
+            layers_to_extract = layers_dict[':layers'][1:-1]
+            layers_to_extract.reverse()
+            extractlayers(dc, layers_to_extract, tar_file, top_most_layer=-1)
 
   Module Contents
   ---------------
@@ -69,8 +75,8 @@
 from __future__ import (
     absolute_import, division, print_function, unicode_literals,
 )
-from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
-from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,wildcard-import
+from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
+from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
 from future.utils import native
 
 #---- Imports ------------------------------------------------------------
@@ -127,12 +133,11 @@ _WHITEOUT_PFX_LEN = len(_WHITEOUT_PFX)
 def denormalizeimage(image_desc, copy=False):
     """
     :param image_desc: a normalized image description as returned from
-                       |docker.Client.images|_,
-                       |docker.Client.inspect_image|_, etc., and passed to
-                       :func:normalizeimage
+        |docker.Client.images|_, |docker.Client.inspect_image|_, etc., and
+        passed to :func:normalizeimage
 
     :param copy: if :const:`True`, make a copy of :obj:`image_desc` before
-                 performing any denormalizations
+        performing any denormalizations
 
     Removes any entries created by :func:normalizeimage.
     """
@@ -154,24 +159,23 @@ def extractlayers(dc, layers, tar_file, top_most_layer=0):
     :param dc: a |docker.Client|_
 
     :param layers: a sequence of inspection objects (likely retrieved with
-                   :func:`inspectlayers`) corresponding to the layers to
-                   extract and flatten in order of precedence
+        :func:`inspectlayers`) corresponding to the layers to extract and
+        flatten in order of precedence
 
     :param tar_file: a :class:`~tarfile.TarFile` open for writing to which
-                     to write the flattened layer archive
+        to write the flattened layer archive
 
     :param top_most_layer: an image ID or an index into :obj:`layers`
-                           indicating the most recent layer to retrieve
-                           (the default of ``0`` references the first item
-                           in :obj:`layers`; see below)
+        indicating the most recent layer to retrieve (the default of ``0``
+        references the first item in :obj:`layers`; see below)
 
-    :raises: :class:`docker.errors.APIError` or
-             :class:`docker.errors.DockerException` - on failure
-             interacting with Docker (e.g., bad image ID, failed
-             connection, Docker not running, etc.); or
+    :raises docker.errors.APIError: on failure interacting with Docker
+        (e.g., failed connection, Docker not running, etc.)
 
-             :class:`UnsafeTarPath` - probably indicative of a bug in
-             Docker
+    :raises docker.errors.DockerException: on failure interacting with
+        Docker (e.g., bad image ID, etc.)
+
+    :raises UnsafeTarPath: - probably indicative of a bug in Docker
 
     Retrieves the layers corresponding to the :obj:`layers` parameter and
     extracts them into :obj:`tar_file`. Changes from layers corresponding
@@ -277,13 +281,13 @@ def extractlayers(dc, layers, tar_file, top_most_layer=0):
 def imagekey(image):
     """
     :param image: a normalized image description as returned from
-                  |docker.Client.images|_, |docker.Client.inspect_image|_,
-                  etc., and passed through :func:`dimgx.normalizeimage`
+        |docker.Client.images|_, |docker.Client.inspect_image|_, etc., and
+        passed through :func:`dimgx.normalizeimage`
 
     :returns: an object providing the appropriate `rich comparison
-              functions
-              <https://docs.python.org/howto/sorting.html#odd-and-ends>`__
-              for use (e.g.) as the ``key`` parameter to :func:`sorted`.
+        functions
+        <https://docs.python.org/howto/sorting.html#odd-and-ends>`__
+        for use (e.g.) as the ``key`` parameter to :func:`sorted`.
 
     The underlying implementation is a :func:`cmp`-like function that is
     wrapped with :func:`functools.cmp_to_key`. See `this
@@ -307,16 +311,18 @@ def inspectlayers(dc, image_spec):
     :returns: a :class:`dict` containing the descriptions (see below)
 
     :raises: :class:`docker.errors.APIError` or
-             :class:`docker.errors.DockerException` on failure
-             interacting with Docker
+        :class:`docker.errors.DockerException` on failure interacting with
+        Docker
 
     Retrieves and normalizes descriptions for the :obj:`image_spec` image
     and each of its ancestors by calling |docker.Client.images|_.
 
-    The returned :class:`dict` is as follows::
+    The returned :class:`dict` is as follows:
+
+    .. code-block:: python
 
         {
-            ':layers': ( image_desc_n, ... image_desc_0 ),
+            ':layers': ( image_desc_n, ..., image_desc_0 ),
             image_id_n: n,
             ...
             image_id_0: 0,
@@ -400,14 +406,13 @@ def inspectlayers(dc, image_spec):
 def normalizeimage(image_desc, copy=False):
     """
     :param image_desc: an image description as returned from
-                       |docker.Client.images|_,
-                       |docker.Client.inspect_image|_, etc.
+        |docker.Client.images|_, |docker.Client.inspect_image|_, etc.
 
     :param copy: if :const:`True`, make a copy of :obj:`image_desc` before
-                 performing any normalizations
+        performing any normalizations
 
     :returns: the normalized image description (:obj:`image_desc` if
-              :obj:`copy` is :const:`False`)
+        :obj:`copy` is :const:`False`)
 
     This method is attempts to address certain `Docker API inconsistencies
     <https://github.com/docker/docker/issues/5893#issuecomment-102398746>`__.
