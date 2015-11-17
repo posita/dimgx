@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-#-*- encoding: utf-8; mode: sh -*-
+#-*- encoding: utf-8; mode: sh; grammar-ext: sh -*-
 
 #=========================================================================
 # Copyright (c) 2015 Matt Bogosian <mtb19@columbia.edu>.
@@ -16,4 +16,4 @@ set -ex
 [ -d "${_MY_DIR}" ]
 [ "${_MY_DIR}/runtests.sh" -ef "${0}" ]
 cd "${_MY_DIR}"
-exec tox ${1+"${@}"}
+exec tox ${TOX_ENV:+-e} ${TOX_ENV}

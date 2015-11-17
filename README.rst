@@ -39,33 +39,33 @@ Jeff Knupp (|@jeffknupp|_) `describes how <http://www.jeffknupp.com/blog/2013/08
 ``dimgx`` - Docker IMaGe layer eXtractor (and flattener)
 ========================================================
 
-.. image:: https://pypip.in/version/dimgx/badge.svg
-    :target: https://pypi.python.org/pypi/dimgx/
-    :alt: [Latest Version]
+.. image:: https://img.shields.io/pypi/v/dimgx.svg
+    :target: https://pypi.python.org/pypi/dimgx
+    :alt: [master Version]
 
 .. image:: https://readthedocs.org/projects/dimgx/badge/?version=master
     :target: https://dimgx.readthedocs.org/en/master/
-    :alt: [Documentation]
+    :alt: [master Documentation]
 
-.. image:: https://pypip.in/license/dimgx/badge.svg
+.. image:: https://img.shields.io/pypi/l/dimgx.svg
     :target: http://opensource.org/licenses/MIT
-    :alt: [License]
+    :alt: [master License]
 
-.. image:: https://pypip.in/py_versions/dimgx/badge.svg
-    :target: https://pypi.python.org/pypi/dimgx/master
-    :alt: [Supported Python Versions]
+.. image:: https://img.shields.io/pypi/pyversions/dimgx.svg
+    :target: https://pypi.python.org/pypi/dimgx
+    :alt: [master Supported Python Versions]
 
-.. image:: https://pypip.in/implementation/dimgx/badge.svg
-    :target: https://pypi.python.org/pypi/dimgx/master
-    :alt: [Supported Python Implementations]
+.. image:: https://img.shields.io/pypi/implementation/dimgx.svg
+    :target: https://pypi.python.org/pypi/dimgx
+    :alt: [master Supported Python Implementations]
 
-.. image:: https://pypip.in/status/dimgx/badge.svg
-    :target: https://pypi.python.org/pypi/dimgx/master
-    :alt: [Development Stage]
+.. image:: https://img.shields.io/pypi/status/dimgx.svg
+    :target: https://pypi.python.org/pypi/dimgx
+    :alt: [master Development Stage]
 
 ..
 
-``dimgx`` extracts and flattens `Docker <https://www.docker.com/whatisdocker/>`_ `image <https://docs.docker.com/terms/image/>`__ `layers <https://docs.docker.com/terms/layer/>`__:
+``dimgx`` extracts and flattens `Docker <https://www.docker.com/whatisdocker/>`_ `image <https://docs.docker.com/terms/image/>`__ `layers <https://docs.docker.com/terms/layer/>`__.
 It is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_.
 Source code is `available on GitHub <https://github.com/posita/dimgx>`__.
 See `the docs <https://dimgx.readthedocs.org/en/master/>`__ for more information.

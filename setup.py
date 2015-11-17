@@ -106,7 +106,6 @@ _SETUP_ARGS = {
     'py_modules'          : ( 'dimgx', ),
     'include_package_data': True,
     'install_requires'    : INSTALL_REQUIRES,
-    'test_suite'          : 'tests',
 
     'entry_points': {
         'console_scripts': (

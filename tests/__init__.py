@@ -73,4 +73,3 @@ class HashedBytesIo(BytesIO):
 # Suppress dimgx logging messages during testing
 logging_basicConfig(format=_DEFAULT_LOG_FMT)
 getLogger('dimgx').setLevel(_LOG_LEVEL)
-getLogger('_dimgx').setLevel(_LOG_LEVEL)

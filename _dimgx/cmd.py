@@ -88,7 +88,7 @@ __all__ = ()
 DOCKER_TLS_VERIFY = environ.get('DOCKER_TLS_VERIFY', None)
 DOCKER_TLS_VERIFY = DOCKER_TLS_VERIFY if DOCKER_TLS_VERIFY else None
 
-_LOGGER = getLogger(__name__)
+_LOGGER = getLogger(__name__.lstrip('_'))
 _LAYER_RE_STR = r'(?:[0-9A-Fa-f]{1,64})'
 _LAYER_SPEC_RE = re_compile(r'^(?P<l>{layer_re})(?::(?P<r>{layer_re}))?$'.format(layer_re=_LAYER_RE_STR), IGNORECASE)
 _TARGET_STDOUT = '-'

@@ -6,6 +6,12 @@
   It looks like crap in a text editor, but it has no effect on rendering, and it allows much more useful diffs.
   Thank you! -->
 
+  Copyright © 2015 [Matt Bogosian](mailto:mtb19@columbia.edu?Subject=dimgx) ([**@posita**](https://github.com/posita)).
+
+  Please see the accompanying [`LICENSE`](LICENSE) (or [`LICENSE.txt`](LICENSE)) file for rights and restrictions governing use of this software.
+  All rights not expressly waived or licensed are reserved.
+  If such a file did not accompany this software, then please contact the author before viewing or using this software in any capacity.
+
 - [ ] `git checkout -b X.Y.Z-release`
 
 - [ ] Set version in [`_dimgx/version.py`](_dimgx/version.py)
@@ -25,11 +31,13 @@ index 0123456..fedcba9 100644
 +__release__ = 'vX.Y.Z'
 ```
 
-- [ ] Set version in [`README.rst`](README.rst) (`master` → `vX.Y.Z`, except for [`https://pypi.python.org/pypi/dimgx/X.Y.Z`](https://pypi.python.org/pypi/dimgx/X.Y.Z))
+- [ ] Set version in [`README.rst`](README.rst) (`master` → `vX.Y.Z`; [`https://pypi.python.org/pypi/dimgx`](https://pypi.python.org/pypi/dimgx) → [`https://pypi.python.org/pypi/dimgx/X.Y.Z`](https://pypi.python.org/pypi/dimgx/X.Y.Z);  [`https://img.shields.io/pypi/.../dimgx.svg`](https://img.shields.io/pypi/.../dimgx.svg) →  [`https://img.shields.io/pypi/.../dimgx/X.Y.Z.svg`](https://img.shields.io/pypi/.../dimgx/X.Y.Z.svg))
 
-- [ ] `git commit -a -m 'Update version and release vX.Y.Z.'`
+- [ ] `git commit --all --message 'Update version and release vX.Y.Z.'`
 
-- [ ] `git tag -s -f -m 'Release vX.Y.Z.' vX.Y.Z`
+- [ ] `git tag --sign --force --message 'Release vX.Y.Z.' vX.Y.Z`
+
+- [ ] `git push --tags`
 
 - [ ] `./setup.py sdist upload`
 
@@ -37,4 +45,4 @@ index 0123456..fedcba9 100644
 
 - [ ] `git checkout master`
 
-- [ ] `git branch -d X.Y.Z-release`
+- [ ] `git branch --delete X.Y.Z-release`

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# dimgx documentation build configuration file, created by
+# Documentation build configuration file, created by
 # sphinx-quickstart on Mon May 11 22:28:48 2015.
 #
 # This file is execfile()d with the current directory set to its
@@ -40,6 +40,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'repoze.sphinx.autointerface',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
