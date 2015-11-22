@@ -25,9 +25,9 @@ index 0123456..fedcba9 100644
 
  __all__ = ()
 
--__version__ = 'master'
+-__version__ = ( 'master', )
 -__release__ = 'master'
-+__version__ = 'X.Y.Z'
++__version__ = ( X, Y, Z )
 +__release__ = 'vX.Y.Z'
 ```
 

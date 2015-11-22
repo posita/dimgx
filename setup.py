@@ -73,6 +73,7 @@ with open(ospath_join(_MY_DIR, 'README.rst')) as _readme_file:
     README = _readme_file.read()
 
 __version__ = _namespace.get('__version__')
+__version__ = u'.'.join(( str(i) for i in __version__ )) if __version__ is not None else None
 __release__ = _namespace.get('__release__', __version__)
 
 _SETUP_ARGS = {

@@ -34,7 +34,7 @@ from _dimgx.cmd import (
     printlayerinfo,
     selectlayers,
 )
-from _dimgx.version import __version__
+from _dimgx.version import __release__
 from dimgx import inspectlayers
 from tests.fauxdockerclient import FauxDockerClient
 
@@ -201,14 +201,14 @@ class CommandTestCase(TestCase):
         try:
             self._parser.parse_args(( '-V', ))
         except FakeSystemExit:
-            self.assertTrue(self._parser.buf.getvalue().endswith(' ' + __version__ + linesep))
+            self.assertTrue(self._parser.buf.getvalue().endswith(' ' + __release__ + linesep))
         else:
             self.assertFail('-V did not cause exit')
 
         try:
             self._parser.parse_args(( '--version', ))
         except FakeSystemExit:
-            self.assertTrue(self._parser.buf.getvalue().endswith(' ' + __version__ + linesep))
+            self.assertTrue(self._parser.buf.getvalue().endswith(' ' + __release__ + linesep))
         else:
             self.assertFail('--version did not cause exit')
 
