@@ -1,30 +1,24 @@
-#-*- encoding: utf-8; mode: python; grammar-ext: py -*-
+# -*- encoding: utf-8; mode: python; grammar-ext: py -*-
 
-#=========================================================================
+# ========================================================================
 """
-  Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
-
-  .. |(c)| unicode:: u+a9
-  .. _`Matt Bogosian`: mailto:mtb19@columbia.edu
-  .. |@posita| replace:: **@posita**
-  .. _`@posita`: https://github.com/posita
-
-  Please see the accompanying ``LICENSE`` (or ``LICENSE.txt``) file for
-  rights and restrictions governing use of this software. All rights not
-  expressly waived or licensed are reserved. If such a file did not
-  accompany this software, then please contact the author before viewing
-  or using this software in any capacity.
+Copyright and other protections apply. Please see the accompanying
+:doc:`LICENSE <LICENSE>` and :doc:`CREDITS <CREDITS>` file(s) for rights
+and restrictions governing use of this software. All rights not expressly
+waived or licensed are reserved. If those files are missing or appear to
+be modified from their originals, then please contact the author before
+viewing or using this software in any capacity.
 """
-#=========================================================================
+# ========================================================================
 
 from __future__ import (
     absolute_import, division, print_function, unicode_literals,
 )
-from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
-from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
+from builtins import *  # noqa: F401,F403; pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
+from future.builtins.disabled import *  # noqa: F401,F403; pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
 from future.utils import iteritems
 
-#---- Imports ------------------------------------------------------------
+# ---- Imports -----------------------------------------------------------
 
 from binascii import unhexlify
 from datetime import datetime
@@ -55,7 +49,7 @@ from dimgx import (
     normalizeimage,
 )
 
-#---- Constants ----------------------------------------------------------
+# ---- Constants ---------------------------------------------------------
 
 __all__ = (
     'FauxDockerClient',
@@ -63,15 +57,15 @@ __all__ = (
 
 _EPOCH = datetime(1970, 1, 1, 0, 0, 0).replace(tzinfo=TZ_UTC)
 
-#---- Classes ------------------------------------------------------------
+# ---- Classes -----------------------------------------------------------
 
-#=========================================================================
+# ========================================================================
 class FauxDockerClient(object):
     """
     Minimal faux client for testing Docker interactions without Docker.
     """
 
-    #---- Public constants -----------------------------------------------
+    # ---- Public constants ----------------------------------------------
 
     SHORT_IDS_BY_PATH = [
         [
@@ -87,7 +81,7 @@ class FauxDockerClient(object):
         ]
     ]
 
-    #---- Protected static methods ---------------------------------------
+    # ---- Protected static methods --------------------------------------
 
     @staticmethod
     def _checkandraise(f):
@@ -101,7 +95,7 @@ class FauxDockerClient(object):
 
         return _wrapped
 
-    #---- Constructor ----------------------------------------------------
+    # ---- Constructor ---------------------------------------------------
 
     def __init__(self, always_raise=None):
         super().__init__()
@@ -110,8 +104,8 @@ class FauxDockerClient(object):
         self.layers = []
         self.layers_by_id = {}
         self.layers_by_tag = {}
-        num_paths = len(FauxDockerClient.SHORT_IDS_BY_PATH) # should not exceed 0x100
-        path_depth = len(FauxDockerClient.SHORT_IDS_BY_PATH[0]) # should not exceed 0x100
+        num_paths = len(FauxDockerClient.SHORT_IDS_BY_PATH)  # should not exceed 0x100
+        path_depth = len(FauxDockerClient.SHORT_IDS_BY_PATH[0])  # should not exceed 0x100
         max_path_idx = path_depth - 1
 
         for j in range(num_paths):
@@ -165,7 +159,7 @@ class FauxDockerClient(object):
 
         self.layers.sort(key=imagekey, reverse=True)
 
-    #---- Public hooks ---------------------------------------------------
+    # ---- Public hooks --------------------------------------------------
 
     @_checkandraise.__func__
     def get_image(self, image):
@@ -206,8 +200,8 @@ class FauxDockerClient(object):
 
         return image_file
 
-    @_checkandraise.__func__
-    def images(self, name=None, quiet=False, all=False, viz=False, filters=None): # pylint: disable=redefined-outer-name
+    @_checkandraise.__func__  # pylint: disable=redefined-outer-name,useless-suppression
+    def images(self, name=None, quiet=False, all=False, viz=False, filters=None):  # pylint: disable=redefined-outer-name
         checks = (
             ( not quiet, '"quiet" must be False' ),
             ( all or False, '"all" must be True' ),
@@ -245,7 +239,7 @@ class FauxDockerClient(object):
     def inspect_image(self, image_id):
         raise NotImplementedError()
 
-    #---- Protected methods ----------------------------------------------
+    # ---- Protected methods ---------------------------------------------
 
     @_checkandraise.__func__
     def _findlayer(self, image_id):

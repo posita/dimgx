@@ -1,90 +1,84 @@
 #!/usr/bin/env python
-#-*- encoding: utf-8; mode: python; grammar-ext: py -*-
+# -*- encoding: utf-8; mode: python; grammar-ext: py -*-
 
-#=========================================================================
+# ========================================================================
 """
-  Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
+Copyright and other protections apply. Please see the accompanying
+:doc:`LICENSE <LICENSE>` and :doc:`CREDITS <CREDITS>` file(s) for rights
+and restrictions governing use of this software. All rights not expressly
+waived or licensed are reserved. If those files are missing or appear to
+be modified from their originals, then please contact the author before
+viewing or using this software in any capacity.
 
-  .. |(c)| unicode:: u+a9
-  .. _`Matt Bogosian`: mailto:mtb19@columbia.edu
-  .. |@posita| replace:: **@posita**
-  .. _`@posita`: https://github.com/posita
+The ``dimgx`` Python Module
+===========================
 
-  Please see the accompanying ``LICENSE`` (or ``LICENSE.txt``) file for
-  rights and restrictions governing use of this software. All rights not
-  expressly waived or licensed are reserved. If such a file did not
-  accompany this software, then please contact the author before viewing
-  or using this software in any capacity.
+Utilities for programmatically inspecting `Docker
+<https://www.docker.com/whatisdocker/>`_ `images
+<https://docs.docker.com/terms/image/>`__ and extracting their `layers
+<https://docs.docker.com/terms/layer/>`__.
 
-  The ``dimgx`` Python Module
-  ===========================
+Examples
+--------
 
-  Utilities for programmatically inspecting `Docker
-  <https://www.docker.com/whatisdocker/>`_ `images
-  <https://docs.docker.com/terms/image/>`__ and extracting their `layers
-  <https://docs.docker.com/terms/layer/>`__.
+Extract all but the first layer of image ``0fe1d2c3b4a5`` to a file called
+``output.tar`` in the current working directory (without proper error
+checking):
 
-  Examples
-  --------
+.. code-block:: python
+    :linenos:
 
-  Extract all but the first layer of image ``0fe1d2c3b4a5`` to a file
-  called ``output.tar`` in the current working directory (without proper
-  error checking):
+    import docker
+    import os
+    import tarfile
+    from dimgx import *
 
-    .. code-block:: python
-        :linenos:
+    DEFAULT_DOCKER_HOST = docker.utils.utils.DEFAULT_UNIX_SOCKET
+    DOCKER_HOST = os.environ.get('DOCKER_HOST', DEFAULT_DOCKER_HOST)
+    dc = docker.Client(DOCKER_HOST)
 
-        import docker
-        import os
-        import tarfile
-        from dimgx import *
+    IMAGE_ID = '0fe1d2c3b4a5'  # short version
+    layers_dict = inspectlayers(dc, IMAGE_ID)
 
-        DEFAULT_DOCKER_HOST = docker.utils.utils.DEFAULT_UNIX_SOCKET
-        DOCKER_HOST = os.environ.get('DOCKER_HOST', DEFAULT_DOCKER_HOST)
-        dc = docker.Client(DOCKER_HOST)
+    with tarfile.open('output.tar', 'w') as tar_file:
+        extractlayers(dc, layers_dict[':layers'][:-1], tar_file)
 
-        IMAGE_ID = '0fe1d2c3b4a5' # short version
-        layers_dict = inspectlayers(dc, IMAGE_ID)
-        with tarfile.open('output.tar', 'w') as tar_file:
-            extractlayers(dc, layers_dict[':layers'][:-1], tar_file)
+Extract all but the first and last layers *in reverse order* (note the
+``-1`` provided for the :obj:`top_most_layer` parameter to
+:func:`extractlayers`):
 
-  Extract all but the first and last layers *in reverse order* (note the
-  ``-1`` provided for the :obj:`top_most_layer` parameter to
-  :func:`extractlayers`):
+.. code-block:: python
+    :linenos:
 
-    .. code-block:: python
-        :linenos:
+    with tarfile.open('output.tar', 'w') as tar_file:
+        layers_to_extract = layers_dict[':layers'][1:-1]
+        layers_to_extract.reverse()
+        extractlayers(dc, layers_to_extract, tar_file, top_most_layer=-1)
 
-        with tarfile.open('output.tar', 'w') as tar_file:
-            layers_to_extract = layers_dict[':layers'][1:-1]
-            layers_to_extract.reverse()
-            extractlayers(dc, layers_to_extract, tar_file, top_most_layer=-1)
+Module Contents
+---------------
 
-  Module Contents
-  ---------------
-
-  .. |docker.Client| replace:: :class:`docker.Client`
-  .. _`docker.Client`: https://docker-py.readthedocs.org/en/latest/api/
-  .. |docker.Client.images| replace:: :func:`docker.Client.images`
-  .. _`docker.Client.images`: https://docker-py.readthedocs.org/en/latest/api/#images
-  .. |docker.Client.inspect_image| replace:: :py:func:`docker.Client.inspect_image`
-  .. _`docker.Client.inspect_image`: https://docker-py.readthedocs.org/en/latest/api/#inspect_image
-  """
-#=========================================================================
+.. |docker.Client| replace:: :class:`docker.Client`
+.. _`docker.Client`: https://docker-py.readthedocs.org/en/latest/api/
+.. |docker.Client.images| replace:: :func:`docker.Client.images`
+.. _`docker.Client.images`: https://docker-py.readthedocs.org/en/latest/api/#images
+.. |docker.Client.inspect_image| replace:: :py:func:`docker.Client.inspect_image`
+.. _`docker.Client.inspect_image`: https://docker-py.readthedocs.org/en/latest/api/#inspect_image
+"""
+# ========================================================================
 
 from __future__ import (
     absolute_import, division, print_function, unicode_literals,
 )
-from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
-from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
+from builtins import *  # noqa: F401,F403; pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
+from future.builtins.disabled import *  # noqa: F401,F403; pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
 from future.utils import native
 
-#---- Imports ------------------------------------------------------------
+# ---- Imports -----------------------------------------------------------
 
 from copy import deepcopy
 from datetime import datetime
 from functools import cmp_to_key
-from io import open
 from logging import (
     ERROR,
     getLogger,
@@ -111,9 +105,9 @@ from _dimgx import (
     logexception,
     naturaltime,
 )
-from _dimgx.version import __version__
+from _dimgx.version import __version__  # noqa: F401
 
-#---- Constants ----------------------------------------------------------
+# ---- Constants ---------------------------------------------------------
 
 __all__ = (
     'UnsafeTarPath',
@@ -127,9 +121,9 @@ _LOGGER = getLogger(__name__)
 _WHITEOUT_PFX = '.wh.'
 _WHITEOUT_PFX_LEN = len(_WHITEOUT_PFX)
 
-#---- Functions ----------------------------------------------------------
+# ---- Functions ---------------------------------------------------------
 
-#=========================================================================
+# ========================================================================
 def denormalizeimage(image_desc, copy=False):
     """
     :param image_desc: a normalized image description as returned from
@@ -153,7 +147,7 @@ def denormalizeimage(image_desc, copy=False):
 
     return image
 
-#=========================================================================
+# ========================================================================
 def extractlayers(dc, layers, tar_file, top_most_layer=0):
     """
     :param dc: a |docker.Client|_
@@ -241,7 +235,7 @@ def extractlayers(dc, layers, tar_file, top_most_layer=0):
                         next_name_len = len(next_info.name)
                         hidden = None
 
-                        for h, deverbal in hides_subtrees: # https://en.wikipedia.org/wiki/deverbal
+                        for h, deverbal in hides_subtrees:  # https://en.wikipedia.org/wiki/deverbal
                             if len(h) > next_name_len:
                                 continue
 
@@ -277,7 +271,7 @@ def extractlayers(dc, layers, tar_file, top_most_layer=0):
     finally:
         rmtree(tmp_dir, ignore_errors=True)
 
-#=========================================================================
+# ========================================================================
 def imagekey(image):
     """
     :param image: a normalized image description as returned from
@@ -299,9 +293,9 @@ def imagekey(image):
     .. |docker.Client.inspect_image| replace:: :func:`docker.Client.inspect_image`
     .. _`docker.Client.inspect_image`: https://docker-py.readthedocs.org/en/latest/api/#inspect_image
     """
-    return _imagekey(image) # pylint: disable=no-value-for-parameter
+    return _imagekey(image)  # pylint: disable=no-value-for-parameter
 
-#=========================================================================
+# ========================================================================
 def inspectlayers(dc, image_spec):
     """
     :param dc: a |docker.Client|_
@@ -402,7 +396,7 @@ def inspectlayers(dc, image_spec):
 
     return layers_by_id
 
-#=========================================================================
+# ========================================================================
 def normalizeimage(image_desc, copy=False):
     """
     :param image_desc: an image description as returned from
@@ -464,7 +458,68 @@ def normalizeimage(image_desc, copy=False):
 
     return image
 
-#=========================================================================
+# ========================================================================
+def patch_broken_tarfile_29760():
+    """
+    Certain versions of Python (starting at 2.7.10, 3.4.4, 3.5.0) contain
+    a bug which causes the Python standard library's :py:mod:`tarfile`
+    module to erroneously raise an exception when calling
+    :py:func:`tarfile.TarFile.next` on a valid tape archives (e.g.,
+    ``.tar`` files) with zero entries. This has been identified as `issue
+    #29760 <http://bugs.python.org/issue29760>`_.
+
+    This function attempts to detect that problem and patch affected
+    implementations until a fix for _`issue #29760` becomes available. It
+    need only be called once per process, but it is harmless to call
+    multiple times. (It will not attempt to apply the patch more than
+    once.) Applying this patch may cause additional seeks and possibly
+    redundant reads, even when reading a tape archive linearly.
+    """
+    # See <http://bugs.python.org/issue29760>
+    from sys import version as sys_version
+    import tarfile
+
+    was_patched = hasattr(tarfile.TarFile, '_patched_29760')
+
+    def _is_broken():
+        from io import BytesIO
+        empty_tar_buf = BytesIO()
+        empty_tar_f = tarfile.open('empty.tar', 'w', empty_tar_buf)
+        empty_tar_f.close()
+        empty_tar_buf.seek(0)
+        empty_tar_f = tarfile.open('empty.tar', 'r', empty_tar_buf)
+
+        try:
+            empty_tar_f.next()
+        except ValueError:
+            return True
+
+        return False
+
+    if was_patched \
+            or not _is_broken():
+        # Nothing more to do
+        return
+
+    _LOGGER.debug('patching broken %s from %s, %s', tarfile.TarFile.next, tarfile.__file__, sys_version)
+
+    def _wrap_next(_f):
+        from functools import wraps
+
+        @wraps(_f)
+        def __patched_next(self, *args, **kw):
+            if self.offset < self.fileobj.tell():
+                self.fileobj.seek(self.offset)
+
+            return _f(self, *args, **kw)
+
+        return __patched_next
+
+    tarfile.TarFile.next = _wrap_next(tarfile.TarFile.next)
+    tarfile.TarFile._patched_29760 = True  # pylint: disable=protected-access
+    assert not _is_broken()
+
+# ========================================================================
 @cmp_to_key
 def _imagekey(i, j):
     created_diff = (i[':created_dt'] - j[':created_dt']).total_seconds()
@@ -477,9 +532,9 @@ def _imagekey(i, j):
     # for (e.g.) the following:
     #
     # [ ...,
-    #   { 'Created': 1234, 'Id': '5b6a...', 'ParentId', '3d4c...' }, # child
-    #   { 'Created': 1234, 'Id': '0def...', 'ParentId', 'fade...' }, # interloper
-    #   { 'Created': 1234, 'Id': '3d4c...', 'ParentId', '0f2e...' }, # parent
+    #   { 'Created': 1234, 'Id': '5b6a...', 'ParentId', '3d4c...' },  # child
+    #   { 'Created': 1234, 'Id': '0def...', 'ParentId', 'fade...' },  # interloper
+    #   { 'Created': 1234, 'Id': '3d4c...', 'ParentId', '0f2e...' },  # parent
     #   ... ]
     #
     # The solution is to call func:docker.Client.inspect_image where there
@@ -487,7 +542,7 @@ def _imagekey(i, j):
     # granular creation times
     return created_diff if created_diff else -(j[':parent_id'] == i[':id']) or +(i[':parent_id'] == j[':id'])
 
-#---- Initialization -----------------------------------------------------
+# ---- Initialization ----------------------------------------------------
 
 if __name__ == '__main__':
     from _dimgx.cmd import main as _main

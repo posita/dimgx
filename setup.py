@@ -1,54 +1,47 @@
 #!/usr/bin/env python
-#-*- encoding: utf-8; mode: python; grammar-ext: py -*-
+# -*- encoding: utf-8; mode: python; grammar-ext: py -*-
 
-#=========================================================================
+# ========================================================================
 """
-  Copyright |(c)| 2015 `Matt Bogosian`_ (|@posita|_).
-
-  .. |(c)| unicode:: u+a9
-  .. _`Matt Bogosian`: mailto:mtb19@columbia.edu
-  .. |@posita| replace:: **@posita**
-  .. _`@posita`: https://github.com/posita
-
-  Please see the accompanying ``LICENSE`` (or ``LICENSE.txt``) file for
-  rights and restrictions governing use of this software. All rights not
-  expressly waived or licensed are reserved. If such a file did not
-  accompany this software, then please contact the author before viewing
-  or using this software in any capacity.
+Copyright and other protections apply. Please see the accompanying
+:doc:`LICENSE <LICENSE>` and :doc:`CREDITS <CREDITS>` file(s) for rights
+and restrictions governing use of this software. All rights not expressly
+waived or licensed are reserved. If those files are missing or appear to
+be modified from their originals, then please contact the author before
+viewing or using this software in any capacity.
 """
-#=========================================================================
+# ========================================================================
 
 from __future__ import (
     absolute_import, division, print_function,
-    # See <http://bugs.python.org/setuptools/issue152>
+    # See <https://bugs.python.org/setuptools/issue152>
     # unicode_literals,
 )
 
-#---- Imports ------------------------------------------------------------
+# ---- Imports -----------------------------------------------------------
 
 from setuptools import (
     find_packages,
     setup,
 )
 
-# See this e-mail thread:
-# <http://www.eby-sarna.com/pipermail/peak/2010-May/003348.html>
-import logging # pylint: disable=unused-import
-import multiprocessing # pylint: disable=unused-import
-
+from codecs import open as codecs_open
 from inspect import (
     currentframe,
     getframeinfo,
 )
+from os import environ
 from os.path import (
     dirname,
     isfile,
     join as ospath_join,
 )
 
-#---- Constants ----------------------------------------------------------
+# ---- Constants ---------------------------------------------------------
 
 __all__ = ()
+
+_MY_DIR = dirname(getframeinfo(currentframe()).filename)
 
 INSTALL_REQUIRES = (
     'docker-py',
@@ -57,9 +50,13 @@ INSTALL_REQUIRES = (
     'python-dateutil',
 )
 
-_MY_DIR = dirname(getframeinfo(currentframe()).filename)
+# WARNING: This imposes limitations on test/requirements.txt such that the
+# full Pip syntax is not supported. See also
+# <http://stackoverflow.com/questions/14399534/>.
+with open(ospath_join(_MY_DIR, 'test', 'requirements.txt')) as f:
+    TESTS_REQUIRE = f.read().splitlines()
 
-#---- Initialization -----------------------------------------------------
+# ---- Initialization ----------------------------------------------------
 
 _namespace = {
     '_version_path': ospath_join(_MY_DIR, '_dimgx', 'version.py'),
@@ -67,26 +64,25 @@ _namespace = {
 
 if isfile(_namespace['_version_path']):
     with open(_namespace['_version_path']) as _version_file:
-        exec(compile(_version_file.read(), _namespace['_version_path'], 'exec'), _namespace, _namespace) # pylint: disable=exec-used
+        exec(compile(_version_file.read(), _namespace['_version_path'], 'exec'), _namespace, _namespace)  # pylint: disable=exec-used
 
-with open(ospath_join(_MY_DIR, 'README.rst')) as _readme_file:
+with codecs_open(ospath_join(_MY_DIR, 'README.rst'), encoding='utf-8') as _readme_file:
     README = _readme_file.read()
 
-__version__ = _namespace.get('__version__')
-__version__ = u'.'.join(( str(i) for i in __version__ )) if __version__ is not None else None
-__release__ = _namespace.get('__release__', __version__)
+__vers_str__ = _namespace.get('__vers_str__')
+__release__ = _namespace.get('__release__', __vers_str__)
 
 _SETUP_ARGS = {
-    'name'                : 'dimgx',
-    'version'             : __version__,
-    'author'              : 'Matt Bogosian',
-    'author_email'        : 'mtb19@columbia.edu',
-    'url'                 : 'https://dimgx.readthedocs.org/en/{}/'.format(__release__),
-    'license'             : 'MIT License',
-    'description'         : 'Docker IMaGe layer eXtractor (and flattener)',
-    'long_description'    : README,
+    'name': 'dimgx',
+    'version': __vers_str__,
+    'author': 'Matt Bogosian',
+    'author_email': 'matt@bogosian.net',
+    'url': 'https://dimgx.readthedocs.org/en/{}/'.format(__release__),
+    'license': 'MIT License',
+    'description': 'Docker IMaGe layer eXtractor (and flattener)',
+    'long_description': README,
 
-    # From <http://pypi.python.org/pypi?%3Aaction=list_classifiers>
+    # From <https://pypi.python.org/pypi?%3Aaction=list_classifiers>
     'classifiers': (
         'Topic :: Software Development :: Build Tools',
         'Development Status :: 4 - Beta',
@@ -103,17 +99,21 @@ _SETUP_ARGS = {
         'Topic :: System :: Archiving :: Packaging',
     ),
 
-    'packages'            : find_packages(exclude = ( 'tests', )),
-    'py_modules'          : ( 'dimgx', ),
+    'packages': find_packages(),
+    'py_modules': ( 'dimgx', ),
     'include_package_data': True,
-    'install_requires'    : INSTALL_REQUIRES,
 
     'entry_points': {
         'console_scripts': (
             'dimgx = _dimgx.cmd:main',
         ),
     },
+
+    'install_requires': INSTALL_REQUIRES,
+    'setup_requires': ( 'pytest-runner', ),
+    'tests_require': TESTS_REQUIRE,
 }
 
 if __name__ == '__main__':
+    environ['COVERAGE_PROCESS_START'] = environ.get('COVERAGE_PROCESS_START', ospath_join(_MY_DIR, '.coveragerc'))
     setup(**_SETUP_ARGS)

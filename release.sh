@@ -10,9 +10,24 @@
 # software in any capacity.
 #=========================================================================
 
+if [ "${#}" -ne 3 ] ; then
+    echo 1>&2 "usage: $( basename "${0}" ) MAJOR MINOR PATCH"
+
+    exit 1
+fi
+
 _MY_DIR="$( cd "$( dirname "${0}" )" && pwd )"
+_PKG='dimgx'
+MAJOR="${1}"
+MINOR="${2}"
+PATCH="${3}"
+VERS="${MAJOR}.${MINOR}.${PATCH}"
+TAG="v${VERS}"
+
 set -ex
-[ -d "${_MY_DIR}" ]
-[ "${_MY_DIR}/runtests.sh" -ef "${0}" ]
 cd "${_MY_DIR}"
-exec tox ${TOX_ENV:+-e} ${TOX_ENV}
+git checkout -b "${VERS}-release"
+perl -pi -e 's{^__version__\s*=\s*\(\s*0,\s*0,\s*0\s*\)$}{__version__ = ( '"${MAJOR}"', '"${MINOR}"', '"${PATCH}"' )}g ;' "_${_PKG}/version.py"
+perl -pi -e 's{master}{'"${TAG}"'}g ; s{pypi/([^/]+/)'"${_PKG}"'(\.svg)?$}{pypi/\1'"${_PKG}"'/'"${VERS}"'\2}g' README.rst
+git commit --all --message "Update version and release ${TAG}."
+git tag --sign --force --message "Release ${TAG}." "${TAG}"

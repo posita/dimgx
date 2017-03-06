@@ -1,29 +1,23 @@
-#-*- encoding: utf-8; mode: python; grammar-ext: py -*-
+# -*- encoding: utf-8; mode: python; grammar-ext: py -*-
 
-#=========================================================================
+# ========================================================================
 """
-  Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
-
-  .. |(c)| unicode:: u+a9
-  .. _`Matt Bogosian`: mailto:mtb19@columbia.edu
-  .. |@posita| replace:: **@posita**
-  .. _`@posita`: https://github.com/posita
-
-  Please see the accompanying ``LICENSE`` (or ``LICENSE.txt``) file for
-  rights and restrictions governing use of this software. All rights not
-  expressly waived or licensed are reserved. If such a file did not
-  accompany this software, then please contact the author before viewing
-  or using this software in any capacity.
+Copyright and other protections apply. Please see the accompanying
+:doc:`LICENSE <LICENSE>` and :doc:`CREDITS <CREDITS>` file(s) for rights
+and restrictions governing use of this software. All rights not expressly
+waived or licensed are reserved. If those files are missing or appear to
+be modified from their originals, then please contact the author before
+viewing or using this software in any capacity.
 """
-#=========================================================================
+# ========================================================================
 
 from __future__ import (
     absolute_import, division, print_function, unicode_literals,
 )
-from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
-from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
+from builtins import *  # noqa: F401,F403; pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
+from future.builtins.disabled import *  # noqa: F401,F403; pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
 
-#---- Imports ------------------------------------------------------------
+# ---- Imports -----------------------------------------------------------
 
 from argparse import (
     ArgumentParser,
@@ -74,6 +68,7 @@ from humanize import naturalsize
 from dimgx import (
     inspectlayers,
     extractlayers as dimgx_extractlayers,
+    patch_broken_tarfile_29760,
 )
 from _dimgx import (
     logexception,
@@ -81,7 +76,7 @@ from _dimgx import (
 )
 from _dimgx.version import __release__
 
-#---- Constants ----------------------------------------------------------
+# ---- Constants ---------------------------------------------------------
 
 __all__ = ()
 
@@ -130,22 +125,22 @@ If no target is provided, information about the specified layers is written to S
 If a target is provided, the specified layers will be extracted and written to the target as a tar archive.
 """
 
-#---- Decorators ---------------------------------------------------------
+# ---- Decorators --------------------------------------------------------
 
-#=========================================================================
+# ========================================================================
 def exitonraise(f):
     @wraps(f)
     def _wrapper(*_args, **_kw):
         try:
             return f(*_args, **_kw)
-        except: # pylint: disable=bare-except
+        except:  # pylint: disable=bare-except
             sys_exit(_EXIT_EXEC)
 
     return _wrapper
 
-#---- Functions ----------------------------------------------------------
+# ---- Functions ---------------------------------------------------------
 
-#=========================================================================
+# ========================================================================
 def buildparser(cls=ArgumentParser):
     parser = cls(description=_DESCRIPTION, epilog=_EPILOG, usage=_USAGE)
     parser.add_argument('-V', '--version', action='version', version='%(prog)s {}'.format(__release__))
@@ -177,7 +172,7 @@ def buildparser(cls=ArgumentParser):
 
     return parser
 
-#=========================================================================
+# ========================================================================
 def extractlayers(dc, args, layers, top_most_layer_id):
     target_path = args.target
     flags = O_WRONLY
@@ -226,7 +221,7 @@ def extractlayers(dc, args, layers, top_most_layer_id):
         with tarfile_open(**open_args) as tar_file:
             dimgx_extractlayers(dc, layers, tar_file, top_most_layer_id)
 
-#=========================================================================
+# ========================================================================
 def layerspec2index(args, layers, layer_spec_part):
     if layer_spec_part is None:
         return None
@@ -246,7 +241,7 @@ def layerspec2index(args, layers, layer_spec_part):
 
     return None
 
-#=========================================================================
+# ========================================================================
 def layertype(value):
     matches = _LAYER_SPEC_RE.search(value)
 
@@ -255,13 +250,14 @@ def layertype(value):
 
     return ( matches.group('l'), matches.group('r'), value )
 
-#=========================================================================
+# ========================================================================
 def main():
     import _dimgx
-    _dimgx._logexception = exitonraise(_dimgx._logexception) # WARNING: monkey patch; pylint: disable=protected-access
+    _dimgx._logexception = exitonraise(_dimgx._logexception)  # WARNING: monkey patch; pylint: disable=protected-access
     args = buildparser().parse_args(sys_argv[1:])
     logging_basicConfig(format=args.log_format)
     getLogger().setLevel(logging_getLevelName(args.log_level))
+    patch_broken_tarfile_29760()
     dc_kw = kwargs_from_env()
 
     # TODO: hack to work around github:docker/docker-py#706
@@ -280,7 +276,7 @@ def main():
     else:
         extractlayers(dc, args, selected_layers, top_most_layer_id)
 
-#=========================================================================
+# ========================================================================
 def printlayerinfo(args, layers, outfile=stdout):
     if args.quiet:
         for l in layers:
@@ -312,7 +308,7 @@ def printlayerinfo(args, layers, outfile=stdout):
         print(fields_fmt.format(image_tag, image_id, parent_id, created, layer_size, virt_size), file=outfile)
         total_size -= layer['Size']
 
-#=========================================================================
+# ========================================================================
 def selectlayers(args, layers):
     layer_specs = args.layers
 
@@ -338,9 +334,9 @@ def selectlayers(args, layers):
             elif ri is None:
                 continue
             elif ri < li:
-                selected_indexes.extend(reversed(range(ri, li + 1))) # upper bounds are inclusive
+                selected_indexes.extend(reversed(range(ri, li + 1)))  # upper bounds are inclusive
             else:
-                selected_indexes.extend(range(li, ri + 1)) # upper bounds are inclusive
+                selected_indexes.extend(range(li, ri + 1))  # upper bounds are inclusive
 
             num_selected_indexes = len(selected_indexes)
 
@@ -362,7 +358,7 @@ def selectlayers(args, layers):
 
     for i in selected_indexes:
         if i not in seen:
-            seen[i] = None # use OrderedDict as an ordered set
+            seen[i] = None  # use OrderedDict as an ordered set
 
     top_most_layer_id = None if not seen else layers[':layers'][min(seen)][':id']
     selected_layers = [ layers[':layers'][i] for i in seen ]

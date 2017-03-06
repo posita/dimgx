@@ -1,29 +1,23 @@
-#-*- encoding: utf-8; mode: python; grammar-ext: py -*-
+# -*- encoding: utf-8; mode: python; grammar-ext: py -*-
 
-#=========================================================================
+# ========================================================================
 """
-  Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
-
-  .. |(c)| unicode:: u+a9
-  .. _`Matt Bogosian`: mailto:mtb19@columbia.edu
-  .. |@posita| replace:: **@posita**
-  .. _`@posita`: https://github.com/posita
-
-  Please see the accompanying ``LICENSE`` (or ``LICENSE.txt``) file for
-  rights and restrictions governing use of this software. All rights not
-  expressly waived or licensed are reserved. If such a file did not
-  accompany this software, then please contact the author before viewing
-  or using this software in any capacity.
+Copyright and other protections apply. Please see the accompanying
+:doc:`LICENSE <LICENSE>` and :doc:`CREDITS <CREDITS>` file(s) for rights
+and restrictions governing use of this software. All rights not expressly
+waived or licensed are reserved. If those files are missing or appear to
+be modified from their originals, then please contact the author before
+viewing or using this software in any capacity.
 """
-#=========================================================================
+# ========================================================================
 
 from __future__ import (
     absolute_import, division, print_function, unicode_literals,
 )
-from builtins import * # pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
-from future.builtins.disabled import * # pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
+from builtins import *  # noqa: F401,F403; pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
+from future.builtins.disabled import *  # noqa: F401,F403; pylint: disable=redefined-builtin,unused-wildcard-import,useless-suppression,wildcard-import
 
-#---- Imports ------------------------------------------------------------
+# ---- Imports -----------------------------------------------------------
 
 from argparse import ArgumentParser
 from io import StringIO
@@ -36,28 +30,28 @@ from _dimgx.cmd import (
 )
 from _dimgx.version import __release__
 from dimgx import inspectlayers
-from tests.fauxdockerclient import FauxDockerClient
+from test.fauxdockerclient import FauxDockerClient
 
-#---- Constants ----------------------------------------------------------
+# ---- Constants ---------------------------------------------------------
 
 __all__ = ()
 
-#---- Classes ------------------------------------------------------------
+# ---- Classes -----------------------------------------------------------
 
-#=========================================================================
+# ========================================================================
 class FakeSystemExit(Exception):
     pass
 
-#=========================================================================
+# ========================================================================
 class FakeExitingArgumentParser(ArgumentParser):
 
-    #---- Constructor ----------------------------------------------------
+    # ---- Constructor ---------------------------------------------------
 
     def __init__(self, *args, **kw):
         ArgumentParser.__init__(self, *args, **kw)
         self.buf = StringIO()
 
-    #---- Public hooks ---------------------------------------------------
+    # ---- Public hooks --------------------------------------------------
 
     def exit(self, status=0, message=None):
         try:
@@ -65,15 +59,15 @@ class FakeExitingArgumentParser(ArgumentParser):
         except SystemExit:
             raise FakeSystemExit(status)
 
-    #---- Private hooks --------------------------------------------------
+    # ---- Private hooks -------------------------------------------------
 
-    def _print_message(self, message, file=None): # pylint: disable=redefined-outer-name
+    def _print_message(self, message, file=None):  # pylint: disable=redefined-outer-name,useless-suppression
         return ArgumentParser._print_message(self, message, self.buf)
 
-#=========================================================================
+# ========================================================================
 class CommandTestCase(TestCase):
 
-    #---- Public hooks ---------------------------------------------------
+    # ---- Public hooks --------------------------------------------------
 
     def setUp(self):
         super().setUp()
@@ -212,7 +206,7 @@ class CommandTestCase(TestCase):
         else:
             self.assertFail('--version did not cause exit')
 
-#---- Initialization -----------------------------------------------------
+# ---- Initialization ----------------------------------------------------
 
 if __name__ == '__main__':
     from unittest import main

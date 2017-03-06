@@ -1,4 +1,4 @@
-# -*- encoding: utf-8; mode: yaml -*-
+# -*- encoding: utf-8 -*-
 
 # ========================================================================
 # Copyright and other protections apply. Please see the accompanying
@@ -9,30 +9,20 @@
 # software in any capacity.
 # ========================================================================
 
-language: python
+include \
+    CREDITS \
+    LICENSE \
+    doc/CREDITS.rst \
+    doc/LICENSE.rst \
+    doc/Makefile \
+    doc/cli.rst \
+    doc/conf.py \
+    doc/contrib.rst \
+    doc/index.rst \
+    doc/intro.rst \
+    doc/py.rst \
+    doc/release_checklist.md \
+    doc/requirements.txt \
+    test/requirements.txt
 
-python:
-    - "2.7"
-    - pypy
-    - "3.3"
-    - "3.4"
-    - "3.5"
-    - "3.6"
-    - pypy3
-
-install:
-    - pip install coveralls tox-travis
-
-matrix:
-    allow_failures:
-        # 3.6 is experimental (needs pylint >= 2.0)
-        - python: "3.6"
-
-        # PyPy3 is experimental
-        - python: pypy3
-
-script:
-    - tox
-
-after_success:
-    - coveralls
+graft test/data

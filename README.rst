@@ -6,21 +6,15 @@
     It looks like crap in a text editor, but it has no effect on rendering, and it allows much more useful diffs.
     Thank you!
 
-Copyright |(c)| 2014-2015 `Matt Bogosian`_ (|@posita|_).
-
-.. |(c)| unicode:: u+a9
-.. _`Matt Bogosian`: mailto:mtb19@columbia.edu?Subject=dimgx
-.. |@posita| replace:: **@posita**
-.. _`@posita`: https://github.com/posita
-
-Please see the accompanying |LICENSE|_ (or |LICENSE.txt|_) file for rights and restrictions governing use of this software.
+Copyright and other protections apply.
+Please see the accompanying |LICENSE|_ and |CREDITS|_ file(s) for rights and restrictions governing use of this software.
 All rights not expressly waived or licensed are reserved.
-If such a file did not accompany this software, then please contact the author before viewing or using this software in any capacity.
+If those files are missing or appear to be modified from their originals, then please contact the author before viewing or using this software in any capacity.
 
 .. |LICENSE| replace:: ``LICENSE``
 .. _`LICENSE`: LICENSE
-.. |LICENSE.txt| replace:: ``LICENSE.txt``
-.. _`LICENSE.txt`: LICENSE
+.. |CREDITS| replace:: ``CREDITS``
+.. _`CREDITS`: CREDITS
 
 .. image:: https://travis-ci.org/posita/dimgx.svg?branch=master
     :target: https://travis-ci.org/posita/dimgx?branch=master
@@ -73,7 +67,7 @@ See `the docs <https://dimgx.readthedocs.org/en/master/>`__ for more information
 Examples
 --------
 
-::
+.. code-block:: console
 
     % dimgx -h
     usage:
@@ -85,7 +79,7 @@ Examples
 
 ..
 
-::
+.. code-block:: console
 
     % dimgx nifty-box # show layers for "nifty-box[:latest]"
     REPO TAG                IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
@@ -97,7 +91,7 @@ Examples
 
 ..
 
-::
+.. code-block:: console
 
     % dimgx -l df2a:82ef nifty-box # show only the second through fourth layers
     IMAGE TAG               IMAGE ID        PARENT ID       CREATED         LAYER SIZE      VIRTUAL SIZE
@@ -107,7 +101,7 @@ Examples
 
 ..
 
-::
+.. code-block:: console
 
     % dimgx -l cd5e:6667 -t nifty.tar nifty-box # extract the third through fifth layers
     % du -hs nifty.tar
