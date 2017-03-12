@@ -9,16 +9,17 @@
 # software in any capacity.
 # ========================================================================
 
+sudo: false
 language: python
 
 python:
     - "2.7"
-    - pypy
     - "3.3"
     - "3.4"
     - "3.5"
     - "3.6"
-    - pypy3
+    - "pypy"
+    - "pypy3"
 
 install:
     - pip install coveralls tox-travis
@@ -29,7 +30,7 @@ matrix:
         - python: "3.6"
 
         # PyPy3 is experimental
-        - python: pypy3
+        - python: "pypy3"
 
 script:
     - tox

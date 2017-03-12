@@ -16,11 +16,11 @@
 /.tox/
 /build/
 /dist/
-/doc/_build/
-/doc/_static/
-/doc/modules.rst
-/doc/dimgx.rst
-/doc/dimgx.*.rst
+/docs/_build/
+/docs/_static/
+/docs/modules.rst
+/docs/dimgx.rst
+/docs/dimgx.*.rst
 /htmlcov/
 __pycache__/
 _trial_temp

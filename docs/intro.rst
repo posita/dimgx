@@ -26,6 +26,7 @@ License
 -------
 
 ``dimgx`` is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_.
+See the :doc:`LICENSE <LICENSE>` file for details.
 Source code is `available on GitHub <https://github.com/posita/dimgx>`__.
 
 Installation

@@ -12,17 +12,6 @@
 include \
     CREDITS \
     LICENSE \
-    doc/CREDITS.rst \
-    doc/LICENSE.rst \
-    doc/Makefile \
-    doc/cli.rst \
-    doc/conf.py \
-    doc/contrib.rst \
-    doc/index.rst \
-    doc/intro.rst \
-    doc/py.rst \
-    doc/release_checklist.md \
-    doc/requirements.txt \
     test/requirements.txt
 
 graft test/data

@@ -16,7 +16,7 @@ import os
 import shlex
 import sys
 sys.path.append('..')
-from setup import _SETUP_ARGS
+from setup import SETUP_ARGS
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -58,8 +58,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = _SETUP_ARGS['name']
-author = _SETUP_ARGS['author']
+project = SETUP_ARGS['name']
+author = SETUP_ARGS['author']
 copyright = u'2014-2017, {}'.format(author)
 
 # The version info for the project you're documenting, acts as replacement for
@@ -67,7 +67,7 @@ copyright = u'2014-2017, {}'.format(author)
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = _SETUP_ARGS['version']
+release = SETUP_ARGS['version']
 # The short X.Y version.
 version = '.'.join(release.split('.')[:2])
 
@@ -279,8 +279,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   (master_doc, '{}'.format(project), '{} Documentation'.format(project),
-   author, project, _SETUP_ARGS['description'],
-   _SETUP_ARGS['classifiers'][0]),
+   author, project, SETUP_ARGS['description'],
+   SETUP_ARGS['classifiers'][0]),
 ]
 
 # Documents to append as an appendix to all manuals.

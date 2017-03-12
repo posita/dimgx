@@ -36,11 +36,13 @@ Submission Guidelines
 If you're willing and able, consider `submitting a pull request <https://github.com/posita/dimgx/pulls>`__ (PR) with a fix.
 There are only a few guidelines:
 
-*   If it isn't already there, please add your name (and optionally your GitHub username, email, website address, or other contact information) to the ``CREDITS`` file::
+*   If it isn't already there, please add your name (and optionally your GitHub username, email, website address, or other contact information) to the ``CREDITS`` file:
 
-    ...
-    *   Gordon the Turtle <https://github.com/GordonTheTurtle>
-    ...
+    .. code-block:: rst
+
+        ...
+        *   `Gordon the Turtle <https://github.com/GordonTheTurtle>`_
+        ...
 
 *   Try to follow the source conventions as you observe them.
     (Note: I have purposely avoided aspects of `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, in part because I have adopted conventions developed from my experiences with other languages, but mostly because I'm growing older and more stubborn.)
@@ -50,9 +52,9 @@ There are only a few guidelines:
 *   Provide unit tests where feasible and appropriate.
     At the very least, existing tests should not fail.
     (There are exceptions, but if there is any doubt, they probably don't apply.)
-    Tests can be run with ``./runtests.sh`` (requires `tox <https://tox.readthedocs.org/en/latest/>`__) or ``python setup.py test``.
 
-..
+    Unit tests live in ``./test``.
+    Tests can be run with ``./helpers/runtests.sh`` (requires `Tox <https://tox.readthedocs.org/en/latest/>`__) or ``python setup.py test``.
 
 * If you need me, mention me (|@posita|_) in your comment, and describe specifically how I can help.
 

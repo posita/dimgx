@@ -50,11 +50,15 @@ INSTALL_REQUIRES = (
     'python-dateutil',
 )
 
+TESTS_REQUIRE = [
+    'pytest',
+]
+
 # WARNING: This imposes limitations on test/requirements.txt such that the
 # full Pip syntax is not supported. See also
 # <http://stackoverflow.com/questions/14399534/>.
 with open(ospath_join(_MY_DIR, 'test', 'requirements.txt')) as f:
-    TESTS_REQUIRE = f.read().splitlines()
+    TESTS_REQUIRE.extend(f.read().splitlines())
 
 # ---- Initialization ----------------------------------------------------
 
@@ -72,7 +76,7 @@ with codecs_open(ospath_join(_MY_DIR, 'README.rst'), encoding='utf-8') as _readm
 __vers_str__ = _namespace.get('__vers_str__')
 __release__ = _namespace.get('__release__', __vers_str__)
 
-_SETUP_ARGS = {
+SETUP_ARGS = {
     'name': 'dimgx',
     'version': __vers_str__,
     'author': 'Matt Bogosian',
@@ -94,6 +98,8 @@ _SETUP_ARGS = {
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: System :: Archiving :: Packaging',
@@ -116,4 +122,4 @@ _SETUP_ARGS = {
 
 if __name__ == '__main__':
     environ['COVERAGE_PROCESS_START'] = environ.get('COVERAGE_PROCESS_START', ospath_join(_MY_DIR, '.coveragerc'))
-    setup(**_SETUP_ARGS)
+    setup(**SETUP_ARGS)

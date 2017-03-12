@@ -11,15 +11,15 @@ Please see the accompanying [`LICENSE`](../LICENSE) and [`CREDITS`](../CREDITS) 
 All rights not expressly waived or licensed are reserved.
 If those files are missing or appear to be modified from their originals, then please contact the author before viewing or using this software in any capacity.
 
-- [ ] If necessary, update copyright in [`LICENSE`](../LICENSE) and [`doc/conf.py`](../doc/conf.py)
+- [ ] If necessary, update copyright in [`LICENSE`](../LICENSE) and [`docs/conf.py`](../docs/conf.py)
 
-- [ ] [`./release.sh`](../release.sh)
+- [ ] [`./helpers/release.sh`](../helpers/release.sh)
 
 - [ ] `git push --tags`
 
-- [ ] `python setup.py sdist upload`
+- [ ] `python3.x setup.py bdist_wheel sdist && python2.7 setup.py bdist_wheel`
 
-- [ ] Upload `dimgx.egg-info/PKG-INFO` to [`https://pypi.python.org/pypi?:action=submit_form&name=dimgx&version=X.Y.Z`](https://pypi.python.org/pypi?:action=submit_form&name=dimgx&version=X.Y.Z), if necessary (work-around)
+- [ ] `twine upload`
 
 - [ ] `git checkout master`
 

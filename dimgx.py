@@ -503,15 +503,15 @@ def patch_broken_tarfile_29760():
 
     _LOGGER.debug('patching broken %s from %s, %s', tarfile.TarFile.next, tarfile.__file__, sys_version)
 
-    def _wrap_next(_f):
+    def _wrap_next(f):
         from functools import wraps
 
-        @wraps(_f)
+        @wraps(f)
         def __patched_next(self, *args, **kw):
             if self.offset < self.fileobj.tell():
                 self.fileobj.seek(self.offset)
 
-            return _f(self, *args, **kw)
+            return f(self, *args, **kw)
 
         return __patched_next
 
