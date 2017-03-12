@@ -19,6 +19,6 @@ from __future__ import (
 
 __all__ = ()
 
-__version__ = ( 0, 0, 0 )
+__version__ = ( 0, 2, 4 )
 __vers_str__ = '.'.join(( str(_) for _ in __version__ ))
 __release__ = 'v' + __vers_str__
