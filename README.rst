@@ -59,6 +59,8 @@ Jeff Knupp (|@jeffknupp|_) `describes how <http://www.jeffknupp.com/blog/2013/08
 
 ..
 
+**UPDATE: This project is no longer maintained or supported. Issues, pull requests, and other contributions will be ignored.**
+
 ``dimgx`` extracts and flattens `Docker <https://www.docker.com/whatisdocker/>`_ `image <https://docs.docker.com/terms/image/>`__ `layers <https://docs.docker.com/terms/layer/>`__.
 It is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_.
 Source code is `available on GitHub <https://github.com/posita/dimgx>`__.
@@ -110,6 +112,5 @@ Examples
 Issues
 ------
 
-``dimgx`` does what I want, so I'm just maintaining it at this point.
-If you find a bug, or want a feature, please `file an issue <https://github.com/posita/dimgx/issues>`__ (if it hasn't already been filed).
-If you're willing and able, consider `contributing <https://dimgx.readthedocs.org/en/master/contrib.html>`__.
+``dimgx`` did what I needed when I needed it, but I have no interested in maintaining it further.
+`Issues <https://github.com/posita/dimgx/issues>`__ and other `contributions <https://dimgx.readthedocs.org/en/master/contrib.html>`__ are no longer considered.
